@@ -1,0 +1,180 @@
+/**
+ * Rooman tabbed-sequence styles.
+ *
+ * Scoped under .rooman-tabbed-sequence so we don't clash with the host
+ * frontend-app-learning styles. Kept self-contained (no @use of openedx
+ * design tokens) so the patch drops in without extra imports.
+ *
+ * Mirrors the static mockup at edx/ui-mockups/learning-page.html.
+ */
+
+$brand-navy:       #1f2a78;
+$brand-navy-dark:  #161e58;
+$brand-orange:     #f5a623;
+
+$bg:               #f4f6fb;
+$surface:          #ffffff;
+$surface-2:        #f8fafc;
+$border:           #e4e8f0;
+$border-strong:    #ced4e0;
+
+$text:             #1a1f36;
+$text-muted:       #5a6478;
+$text-subtle:      #8b94a8;
+$accent-soft:      #eef0fb;
+
+$radius:           10px;
+$radius-lg:        14px;
+
+$font-stack:       'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+
+@keyframes rts-fade-up {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0);    }
+}
+
+.rooman-tabbed-sequence {
+  font-family: $font-stack;
+  background: $surface;
+  border: 1px solid $border;
+  border-radius: $radius-lg;
+  box-shadow: 0 4px 12px rgba(15, 23, 42, .06);
+  overflow: hidden;
+
+  // -------- Header --------
+  .rts-header {
+    padding: 22px 32px 12px;
+    background: linear-gradient(180deg, #fbfcff 0%, #fff 100%);
+    border-bottom: 1px solid $border;
+  }
+  .rts-eyebrow {
+    display: inline-block;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    color: $brand-navy;
+    background: $accent-soft;
+    padding: 4px 12px;
+    border-radius: 999px;
+  }
+  .rts-title {
+    margin: 8px 0 0;
+    font-size: 28px;
+    font-weight: 800;
+    letter-spacing: -.4px;
+    line-height: 1.2;
+    color: $text;
+  }
+
+  // -------- Tab bar --------
+  .rts-tabbar {
+    display: flex;
+    gap: 6px;
+    padding: 14px 32px 0;
+    border-bottom: 1px solid $border;
+    background: $surface;
+    position: sticky;
+    top: 0;
+    z-index: 5;
+    overflow-x: auto;
+    scrollbar-width: thin;
+  }
+
+  .rts-tab {
+    flex: 0 0 auto;
+    padding: 12px 20px;
+    background: transparent;
+    border: none;
+    font-family: inherit;
+    font-size: 13.5px;
+    font-weight: 600;
+    color: $text-muted;
+    cursor: pointer;
+    border-radius: 8px 8px 0 0;
+    border-bottom: 3px solid transparent;
+    margin-bottom: -1px;
+    white-space: nowrap;
+    transition: color .15s, background .15s, border-color .15s;
+
+    &:hover {
+      color: $text;
+      background: $surface-2;
+    }
+
+    &:focus-visible {
+      outline: 2px solid $brand-navy;
+      outline-offset: 2px;
+    }
+
+    &.active {
+      color: $brand-navy;
+      border-bottom-color: $brand-navy;
+      background: $accent-soft;
+    }
+  }
+
+  // -------- Panel (where the host Unit renders) --------
+  .rts-panel {
+    padding: 32px 40px 48px;
+    animation: rts-fade-up .25s ease both;
+    color: $text;
+    font-size: 15.5px;
+    line-height: 1.75;
+
+    h1, h2, h3, h4, h5, h6 {
+      color: $text;
+      letter-spacing: -.3px;
+      line-height: 1.25;
+    }
+    h2 { font-size: 26px; font-weight: 800; margin: 0 0 14px; }
+    h3 { font-size: 19px; font-weight: 700; margin: 28px 0 10px; }
+    h4 { font-size: 17px; font-weight: 700; margin: 22px 0 8px; }
+
+    p, li {
+      font-size: 15.5px;
+      line-height: 1.75;
+    }
+    ul, ol { padding-left: 22px; }
+    li { margin-bottom: 6px; }
+
+    // Cap reading width on prose containers without forcing it on iframes
+    > div:not(.xblock):not([class*="iframe"]) {
+      max-width: 820px;
+    }
+
+    a { color: $brand-navy; }
+
+    code, pre {
+      font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    }
+    pre {
+      background: #0f1735;
+      color: #e6ebff;
+      padding: 16px 18px;
+      border-radius: $radius;
+      overflow-x: auto;
+      font-size: 13.5px;
+      line-height: 1.6;
+    }
+  }
+
+  // Tighter spacing for embedded LTI iframes (rooman_lab xBlock, etc.)
+  .rts-panel iframe {
+    width: 100%;
+    border: 1px solid $border;
+    border-radius: $radius;
+    min-height: 600px;
+  }
+}
+
+// Mobile
+@media (max-width: 720px) {
+  .rooman-tabbed-sequence {
+    .rts-header { padding: 16px 18px 10px; }
+    .rts-title  { font-size: 22px; }
+    .rts-tabbar { padding: 10px 14px 0; }
+    .rts-tab    { padding: 10px 14px; font-size: 13px; }
+    .rts-panel  { padding: 22px 18px 32px; }
+  }
+}

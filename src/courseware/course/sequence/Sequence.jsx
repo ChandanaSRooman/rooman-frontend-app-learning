@@ -24,6 +24,8 @@ import messages from './messages';
 import HiddenAfterDue from './hidden-after-due';
 import { UnitNavigation } from './sequence-navigation';
 import SequenceContent from './SequenceContent';
+import TabbedSequence from './tabbed/TabbedSequence';
+import { shouldUseTabs } from './tabbed/utils';
 
 const Sequence = ({
   unitId,
@@ -46,6 +48,12 @@ const Sequence = ({
   const section = useModel('sections', sequence ? sequence.sectionId : null);
   const unit = useModel('units', unitId);
   const sequenceStatus = useSelector(state => state.courseware.sequenceStatus);
+  const unitsModel = useSelector(state => state.models?.units || {});
+  const rooman_unitList = (sequence && sequence.unitIds ? sequence.unitIds : []).map(id => ({
+    id,
+    title: (unitsModel[id] && (unitsModel[id].title || unitsModel[id].displayName)) || '',
+  }));
+  const rooman_useTabs = shouldUseTabs(rooman_unitList);
   const sequenceMightBeUnit = useSelector(state => state.courseware.sequenceMightBeUnit);
 
   const handleNext = () => {
@@ -215,16 +223,39 @@ const Sequence = ({
           </div>
 
           <div className="unit-container flex-grow-1 pt-4">
-            <SequenceContent
-              courseId={courseId}
-              gated={gated}
-              sequenceId={sequenceId}
-              unitId={unitId}
-              unitLoadedHandler={handleUnitLoaded}
-              isOriginalUserStaff={originalUserIsStaff}
-              renderUnitNavigation={renderUnitNavigation}
-            />
-            {unitHasLoaded && renderUnitNavigation(false)}
+            {rooman_useTabs ? (
+              <TabbedSequence
+                units={rooman_unitList}
+                activeUnitId={unitId}
+                sequenceTitle={sequence && sequence.title}
+                onUnitChange={(nextId) => handleNavigate(nextId)}
+                renderUnit={(id) => (
+                  <SequenceContent
+                    key={id}
+                    courseId={courseId}
+                    gated={gated}
+                    sequenceId={sequenceId}
+                    unitId={id}
+                    unitLoadedHandler={handleUnitLoaded}
+                    isOriginalUserStaff={originalUserIsStaff}
+                    renderUnitNavigation={() => null}
+                  />
+                )}
+              />
+            ) : (
+              <>
+                <SequenceContent
+                  courseId={courseId}
+                  gated={gated}
+                  sequenceId={sequenceId}
+                  unitId={unitId}
+                  unitLoadedHandler={handleUnitLoaded}
+                  isOriginalUserStaff={originalUserIsStaff}
+                  renderUnitNavigation={renderUnitNavigation}
+                />
+                {unitHasLoaded && renderUnitNavigation(false)}
+              </>
+            )}
           </div>
         </div>
         <NotificationsDiscussionsSidebarSlot courseId={courseId} />
