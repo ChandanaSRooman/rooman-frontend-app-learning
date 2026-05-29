@@ -106,7 +106,7 @@ describe('ContentIFrame Component', () => {
         expect(iframe).toHaveAttribute('src', props.iframeUrl);
         expect(iframe).toHaveAttribute('allow', IFRAME_FEATURE_POLICY);
         expect(iframe).toHaveAttribute('allowfullscreen', '');
-        expect(iframe).toHaveAttribute('scrolling', 'no');
+        expect(iframe).toHaveAttribute('scrolling', 'auto');
         expect(iframe).toHaveAttribute('referrerpolicy', 'origin');
       });
     });

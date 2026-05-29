@@ -184,13 +184,15 @@ describe('CoursewareContainer', () => {
     const courseHomeMetadata = defaultCourseHomeMetadata;
     const courseId = defaultCourseId;
 
-    function assertLoadedHeader(container) {
-      const courseHeader = container.querySelector('.learning-header');
-      // Ensure the course number and org appear - this proves we loaded course metadata properly.
-      expect(courseHeader).toHaveTextContent(courseHomeMetadata.number);
-      expect(courseHeader).toHaveTextContent(courseHomeMetadata.org);
-      // Ensure the course title is showing up in the header.  This means we loaded course blocks properly.
-      expect(courseHeader.querySelector('.course-title')).toHaveTextContent(courseHomeMetadata.title);
+    async function assertLoadedHeader(container) {
+      await waitFor(() => {
+        const courseHeader = container.querySelector('.learning-header');
+        // Ensure the course number and org appear - this proves we loaded course metadata properly.
+        expect(courseHeader).toHaveTextContent(courseHomeMetadata.number);
+        expect(courseHeader).toHaveTextContent(courseHomeMetadata.org);
+        // Ensure the course title is showing up in the header.  This means we loaded course blocks properly.
+        expect(courseHeader.querySelector('.course-title')).toHaveTextContent(courseHomeMetadata.title);
+      });
     }
 
     function assertNoSequenceNavigation(container) {
@@ -221,7 +223,7 @@ describe('CoursewareContainer', () => {
         history.push(`/course/${courseId}`);
         const container = await loadContainer();
 
-        assertLoadedHeader(container);
+        await assertLoadedHeader(container);
         assertNoSequenceNavigation(container);
 
         expect(container.querySelector('.fake-unit')).toHaveTextContent('Unit Contents');
@@ -244,7 +246,7 @@ describe('CoursewareContainer', () => {
         history.push(`/course/${courseId}`);
         const container = await loadContainer();
 
-        assertLoadedHeader(container);
+        await assertLoadedHeader(container);
         assertNoSequenceNavigation(container);
 
         expect(container.querySelector('.fake-unit')).toHaveTextContent('Unit Contents');
@@ -276,7 +278,7 @@ describe('CoursewareContainer', () => {
         it('should choose a unit within the section\'s first sequence', async () => {
           setUrl(sectionTree[1].id);
           const container = await loadContainer();
-          assertLoadedHeader(container);
+          await assertLoadedHeader(container);
           assertNoSequenceNavigation(container);
           assertLocation(container, sequenceTree[1][0].id, unitTree[1][0][0].id);
         });
@@ -331,7 +333,7 @@ describe('CoursewareContainer', () => {
         history.push(`/course/${courseId}/${sequenceBlock.id}`);
         const container = await loadContainer();
 
-        assertLoadedHeader(container);
+        await assertLoadedHeader(container);
         assertNoSequenceNavigation(container);
 
         expect(container.querySelector('.fake-unit')).toHaveTextContent('Unit Contents');
@@ -350,7 +352,7 @@ describe('CoursewareContainer', () => {
         history.push(`/course/${courseId}/${sequenceBlock.id}`);
         const container = await loadContainer();
 
-        assertLoadedHeader(container);
+        await assertLoadedHeader(container);
         assertNoSequenceNavigation(container);
 
         expect(container.querySelector('.fake-unit')).toHaveTextContent('Unit Contents');
@@ -367,7 +369,7 @@ describe('CoursewareContainer', () => {
         history.push(`/course/${courseId}/${sequenceBlock.id}/${unitBlocks[2].id}`);
         const container = await loadContainer();
 
-        assertLoadedHeader(container);
+        await assertLoadedHeader(container);
         assertNoSequenceNavigation(container);
 
         expect(container.querySelector('.fake-unit')).toHaveTextContent('Unit Contents');
@@ -383,7 +385,7 @@ describe('CoursewareContainer', () => {
         history.push(`/course/${courseId}/${sequenceBlock.id}/${unitBlocks[0].id}`);
         await loadContainer();
 
-        expect(screen.getByTestId('org.openedx.frontend.learning.sequence_navigation.v1')).toBeInTheDocument();
+        expect(await screen.findByTestId('org.openedx.frontend.learning.sequence_navigation.v1')).toBeInTheDocument();
       });
     });
   });

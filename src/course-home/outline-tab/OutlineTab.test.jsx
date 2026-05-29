@@ -639,7 +639,7 @@ describe('Outline Tab', () => {
         });
         await executeThunk(thunks.fetchOutlineTab(courseId), store.dispatch);
         await act(async () => render(<LoadedTabPage courseId={courseId} activeTabSlug="outline">...</LoadedTabPage>, { store }));
-        const instructorToolbar = await screen.getByTestId('instructor-toolbar');
+        const instructorToolbar = await screen.findByTestId('instructor-toolbar');
         expect(instructorToolbar).toBeInTheDocument();
         expect(screen.getByText('This learner no longer has access to this course. Their access expired on', { exact: false })).toBeInTheDocument();
         expect(screen.getByText('1/1/2020', { exact: false })).toBeInTheDocument();
@@ -655,7 +655,7 @@ describe('Outline Tab', () => {
         });
         await executeThunk(thunks.fetchOutlineTab(courseId), store.dispatch);
         await act(async () => render(<LoadedTabPage courseId={courseId} activeTabSlug="outline">...</LoadedTabPage>, { store }));
-        const instructorToolbar = await screen.getByTestId('instructor-toolbar');
+        const instructorToolbar = await screen.findByTestId('instructor-toolbar');
         expect(instructorToolbar).toBeInTheDocument();
         expect(screen.queryByText('This learner no longer has access to this course. Their access expired on', { exact: false })).not.toBeInTheDocument();
       });

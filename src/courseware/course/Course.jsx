@@ -15,6 +15,8 @@ import { CelebrationModal, shouldCelebrateOnSectionLoad, WeeklyGoalCelebrationMo
 import ContentTools from './content-tools';
 import Sequence from './sequence';
 import { CourseBreadcrumbsSlot } from '../../plugin-slots/CourseBreadcrumbsSlot';
+import { NotificationsDiscussionsSidebarTriggerSlot } from '../../plugin-slots/NotificationsDiscussionsSidebarTriggerSlot';
+import { CourseOutlineMobileSidebarTriggerSlot } from '../../plugin-slots/CourseOutlineMobileSidebarTriggerSlot';
 
 const Course = ({
   courseId,
@@ -86,6 +88,10 @@ const Course = ({
           isStaff={isStaff}
           unitId={unitId}
         />
+        <div className="w-100 d-flex align-items-center">
+          <CourseOutlineMobileSidebarTriggerSlot />
+          <NotificationsDiscussionsSidebarTriggerSlot courseId={courseId} />
+        </div>
         {shouldDisplayChat && (
           <>
             <Chat

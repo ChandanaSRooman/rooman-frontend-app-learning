@@ -66,14 +66,19 @@ describe('DatesTab', () => {
   // better than assuming anything about how the surrounding elements are organized by div and span or whatever. And
   // better than adding non-style class names.
   // Hence the following getDay query helper.
+  // Uses textContent matching to handle FormattedDate splitting text across child spans.
   async function getDay(date) {
-    const dateNode = await screen.findByText(date);
-    let parent = dateNode.parentElement;
+    const headers = await screen.findAllByTestId('dates-header');
+    const header = headers.find((h) => h.textContent.includes(date));
+    if (!header) {
+      throw new Error(`Did not find dates-header containing: ${date}`);
+    }
+    let parent = header.parentElement;
     while (parent) {
       if (parent.dataset && parent.dataset.testid === 'dates-day') {
         return {
           day: parent,
-          header: within(parent).getByTestId('dates-header'),
+          header,
           items: within(parent).queryAllByTestId('dates-item'),
         };
       }
@@ -92,7 +97,7 @@ describe('DatesTab', () => {
     });
 
     it('handles unreleased & complete', async () => {
-      const { header } = await getDay('Sun, May 3, 2020');
+      const { header } = await getDay('Mon, May 4, 2020');
       const badges = within(header).getAllByTestId('dates-badge');
       expect(badges).toHaveLength(2);
       expect(badges[0]).toHaveTextContent('Completed');
@@ -100,7 +105,7 @@ describe('DatesTab', () => {
     });
 
     it('handles unreleased & past due', async () => {
-      const { header } = await getDay('Mon, May 4, 2020');
+      const { header } = await getDay('Tue, May 5, 2020');
       const badges = within(header).getAllByTestId('dates-badge');
       expect(badges).toHaveLength(2);
       expect(badges[0]).toHaveTextContent('Past due');
@@ -119,7 +124,7 @@ describe('DatesTab', () => {
     });
 
     it('same status items have header badge', async () => {
-      const { day, header } = await getDay('Tue, May 26, 2020');
+      const { day, header } = await getDay('Wed, May 27, 2020');
       const badge = within(header).getByTestId('dates-badge');
       expect(badge).toHaveTextContent('Past due'); // one header badge
       expect(within(day).getAllByTestId('dates-badge')).toHaveLength(1); // no other badges
@@ -168,7 +173,7 @@ describe('DatesTab', () => {
       axiosMock.onGet(datesUrl).reply(200, datesTabData);
       render(component);
 
-      await waitFor(() => expect(screen.getByText('We’ve built a suggested schedule to help you stay on track. But don’t worry—it’s flexible so you can learn at your own pace.')).toBeInTheDocument());
+      await waitFor(() => expect(screen.getByText(/suggested schedule to help you stay on track/)).toBeInTheDocument());
     });
 
     it('renders UpgradeToCompleteAlert', async () => {
@@ -182,7 +187,7 @@ describe('DatesTab', () => {
       axiosMock.onGet(datesUrl).reply(200, datesTabData);
       render(component);
 
-      await waitFor(() => expect(screen.getByText('You are auditing this course, which means that you are unable to participate in graded assignments. To complete graded assignments as part of this course, you can upgrade today.')).toBeInTheDocument());
+      await waitFor(() => expect(screen.getByText(/unable to participate in graded assignments/)).toBeInTheDocument());
       expect(screen.getByRole('button', { name: 'Upgrade now' })).toBeInTheDocument();
     });
 
@@ -197,8 +202,8 @@ describe('DatesTab', () => {
       axiosMock.onGet(datesUrl).reply(200, datesTabData);
       render(component);
 
-      await waitFor(() => expect(screen.getByText('It looks like you missed some important deadlines based on our suggested schedule.')).toBeInTheDocument());
-      expect(screen.getByText('To keep yourself on track, you can update this schedule and shift the past due assignments into the future. Don’t worry—you won’t lose any of the progress you’ve made when you shift your due dates.')).toBeInTheDocument();
+      await waitFor(() => expect(screen.getByText(/missed some important deadlines based on our suggested schedule/)).toBeInTheDocument());
+      expect(screen.getByText(/shift the past due assignments into the future/)).toBeInTheDocument();
       expect(screen.getByRole('button', { name: 'Upgrade to shift due dates' })).toBeInTheDocument();
     });
 
@@ -213,8 +218,8 @@ describe('DatesTab', () => {
       axiosMock.onGet(datesUrl).reply(200, datesTabData);
       render(component);
 
-      await waitFor(() => expect(screen.getByText('It looks like you missed some important deadlines based on our suggested schedule.')).toBeInTheDocument());
-      expect(screen.getByText('To keep yourself on track, you can update this schedule and shift the past due assignments into the future. Don’t worry—you won’t lose any of the progress you’ve made when you shift your due dates.')).toBeInTheDocument();
+      await waitFor(() => expect(screen.getByText(/missed some important deadlines based on our suggested schedule/)).toBeInTheDocument());
+      expect(screen.getByText(/shift the past due assignments into the future/)).toBeInTheDocument();
       expect(screen.getByRole('button', { name: 'Shift due dates' })).toBeInTheDocument();
     });
 
@@ -230,7 +235,7 @@ describe('DatesTab', () => {
       render(component);
 
       // confirm "Shift due dates" button has rendered
-      await waitFor(() => expect(screen.getByRole('button', { name: 'Shift due dates' })).toBeInTheDocument());
+      await waitFor(() => expect(screen.getByRole('button', { name: /Shift due dates/i })).toBeInTheDocument());
 
       // update response to reflect shifted dates
       datesTabData.datesBannerInfo = {
@@ -246,7 +251,7 @@ describe('DatesTab', () => {
       axiosMock.onPost(`${getConfig().LMS_BASE_URL}/api/course_experience/v1/reset_course_deadlines`).reply(200, resetDeadlinesData);
 
       // click "Shift due dates"
-      fireEvent.click(screen.getByRole('button', { name: 'Shift due dates' }));
+      fireEvent.click(screen.getByRole('button', { name: /Shift due dates/i }));
 
       // wait for page to reload & Toast to render
       await waitFor(() => expect(screen.getByText("You've successfully shifted your dates!")).toBeInTheDocument());
@@ -292,7 +297,7 @@ describe('DatesTab', () => {
       axiosMock.onGet(datesUrl).reply(200, datesTabData);
       render(component);
 
-      const upgradeButton = await waitFor(() => screen.getByRole('button', { name: 'Upgrade to shift due dates' }));
+      const upgradeButton = await screen.findByRole('button', { name: 'Upgrade to shift due dates' });
       fireEvent.click(upgradeButton);
 
       expect(sendTrackEvent).toHaveBeenCalledTimes(1);

@@ -55,7 +55,7 @@ describe('NotificationsWidget', () => {
     const userVerifiedMode = Factory.build('verifiedMode');
     await setupDiscussionSidebar({ verifiedMode: userVerifiedMode, isNewDiscussionSidebarViewEnabled: true });
 
-    const sidebarButton = await screen.getByRole('button', { name: /Show sidebar tray/i });
+    const sidebarButton = await screen.findByRole('button', { name: /Show sidebar tray/i });
 
     await act(async () => {
       fireEvent.click(sidebarButton);

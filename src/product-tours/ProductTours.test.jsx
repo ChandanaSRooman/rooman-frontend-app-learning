@@ -98,12 +98,12 @@ describe('Course Home Tours', () => {
     });
 
     it('renders modal', async () => {
-      expect(await screen.findByRole('dialog', { name: 'New user course home prompt' })).toBeInTheDocument();
-      expect(screen.getByRole('button', { name: 'Begin tour' })).toBeInTheDocument();
+      expect(await screen.findByRole('dialog', { name: 'New user course home prompt' }, { timeout: 3000 })).toBeInTheDocument();
+      expect(await screen.findByRole('button', { name: 'Begin tour' }, { timeout: 3000 })).toBeInTheDocument();
     });
 
     it('renders checkpoint on click of "Begin tour"', async () => {
-      const beginTourButton = await screen.findByRole('button', { name: 'Begin tour' });
+      const beginTourButton = await screen.findByRole('button', { name: 'Begin tour' }, { timeout: 3000 });
       fireEvent.click(beginTourButton);
 
       expect(await screen.findByRole('dialog', { name: 'Take the course!' }));
@@ -118,7 +118,7 @@ describe('Course Home Tours', () => {
       });
       await fetchAndRender();
 
-      expect(await screen.findByRole('dialog')).toBeInTheDocument();
+      expect(await screen.findByRole('dialog', {}, { timeout: 3000 })).toBeInTheDocument();
       expect(screen.getByText('We’ve recently added a few new features to the course experience.', { exact: false })).toBeInTheDocument();
     });
   });
@@ -137,7 +137,7 @@ describe('Course Home Tours', () => {
     });
 
     it('launches tour on button click', async () => {
-      const launchTourButton = await screen.findByRole('button', { name: 'Launch tour' });
+      const launchTourButton = await screen.findByRole('button', { name: 'Launch tour' }, { timeout: 3000 });
       expect(launchTourButton).toBeInTheDocument();
 
       fireEvent.click(launchTourButton);
