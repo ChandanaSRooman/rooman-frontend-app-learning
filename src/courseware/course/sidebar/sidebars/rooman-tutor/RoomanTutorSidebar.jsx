@@ -22,10 +22,11 @@
  *
  *   The default fallback below works for the dev box. Override for prod.
  */
-import { useCallback, useContext, useEffect, useRef, useState } from 'react';
+import {
+  useCallback, useContext, useEffect, useRef, useState,
+} from 'react';
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 import { useModel } from '@src/generic/model-store';
-import PropTypes from 'prop-types';
 
 import SidebarBase from '../../common/SidebarBase';
 import SidebarContext from '../../SidebarContext';
@@ -56,7 +57,7 @@ const RoomanTutorSidebar = ({ intl }) => {
   const courseTitle = courseHomeMeta?.title || '';
   const unitTitle = unit?.title || '';
 
-  const [history, setHistory] = useState([]);   // [{role, content}]
+  const [history, setHistory] = useState([]); // [{role, content}]
   const [draft, setDraft] = useState('');
   const [sending, setSending] = useState(false);
   const [error, setError] = useState(null);
@@ -71,7 +72,7 @@ const RoomanTutorSidebar = ({ intl }) => {
 
   const send = useCallback(async () => {
     const question = draft.trim();
-    if (!question || sending) return;
+    if (!question || sending) { return; }
     setSending(true);
     setError(null);
 
@@ -83,14 +84,14 @@ const RoomanTutorSidebar = ({ intl }) => {
     try {
       const res = await fetch(CHAT_URL, {
         method: 'POST',
-        credentials: 'omit',   // see file-top comment re CORS + credentials
+        credentials: 'omit', // see file-top comment re CORS + credentials
         headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
         body: JSON.stringify({
           question,
           course_id: courseId || null,
-          unit_id:   unitId || null,
+          unit_id: unitId || null,
           course_title: courseTitle,
-          unit_title:   unitTitle,
+          unit_title: unitTitle,
           // Send the last few turns so the LLM remembers the thread.
           history: history.slice(-HISTORY_WINDOW),
         }),
