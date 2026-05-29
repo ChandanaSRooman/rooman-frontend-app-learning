@@ -58,7 +58,7 @@ const ContentIFrame = ({
     allow: IFRAME_FEATURE_POLICY,
     allowFullScreen: true,
     height: iframeHeight,
-    scrolling: 'no',
+    scrolling: 'auto',
     referrerPolicy: 'origin',
     onLoad: handleIFrameLoad,
   };

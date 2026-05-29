@@ -11,11 +11,9 @@ import { useModel } from '@src/generic/model-store';
 import Chat from './chat/Chat';
 import SidebarProvider from './sidebar/SidebarContextProvider';
 import NewSidebarProvider from './new-sidebar/SidebarContextProvider';
-import { NotificationsDiscussionsSidebarTriggerSlot } from '../../plugin-slots/NotificationsDiscussionsSidebarTriggerSlot';
 import { CelebrationModal, shouldCelebrateOnSectionLoad, WeeklyGoalCelebrationModal } from './celebration';
 import ContentTools from './content-tools';
 import Sequence from './sequence';
-import { CourseOutlineMobileSidebarTriggerSlot } from '../../plugin-slots/CourseOutlineMobileSidebarTriggerSlot';
 import { CourseBreadcrumbsSlot } from '../../plugin-slots/CourseBreadcrumbsSlot';
 
 const Course = ({
@@ -100,10 +98,6 @@ const Course = ({
             />
           </>
         )}
-        <div className="w-100 d-flex align-items-center">
-          <CourseOutlineMobileSidebarTriggerSlot />
-          <NotificationsDiscussionsSidebarTriggerSlot courseId={courseId} />
-        </div>
       </div>
 
       <AlertList topic="sequence" />

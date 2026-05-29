@@ -7,9 +7,11 @@ import messages from './messages';
 import Tabs from '../generic/tabs/Tabs';
 import { CoursewareSearch, CoursewareSearchToggle } from '../course-home/courseware-search';
 import { useCoursewareSearchState } from '../course-home/courseware-search/hooks';
+import { NotificationsDiscussionsSidebarTriggerSlot } from '../plugin-slots/NotificationsDiscussionsSidebarTriggerSlot';
+import { CourseOutlineMobileSidebarTriggerSlot } from '../plugin-slots/CourseOutlineMobileSidebarTriggerSlot';
 
 const CourseTabsNavigation = ({
-  activeTabSlug, className, tabs,
+  activeTabSlug, className, tabs, courseId,
 }) => {
   const intl = useIntl();
   const { show } = useCoursewareSearchState();
@@ -37,6 +39,12 @@ const CourseTabsNavigation = ({
           <div className="search-toggle">
             <CoursewareSearchToggle />
           </div>
+          {courseId && (
+            <div className="d-flex align-items-center ml-2">
+              <CourseOutlineMobileSidebarTriggerSlot />
+              <NotificationsDiscussionsSidebarTriggerSlot courseId={courseId} />
+            </div>
+          )}
         </div>
       </div>
       {show && <CoursewareSearch />}
@@ -47,6 +55,7 @@ const CourseTabsNavigation = ({
 CourseTabsNavigation.propTypes = {
   activeTabSlug: PropTypes.string,
   className: PropTypes.string,
+  courseId: PropTypes.string,
   tabs: PropTypes.arrayOf(PropTypes.shape({
     title: PropTypes.string.isRequired,
     slug: PropTypes.string.isRequired,
@@ -57,6 +66,7 @@ CourseTabsNavigation.propTypes = {
 CourseTabsNavigation.defaultProps = {
   activeTabSlug: undefined,
   className: null,
+  courseId: null,
 };
 
 export default CourseTabsNavigation;
