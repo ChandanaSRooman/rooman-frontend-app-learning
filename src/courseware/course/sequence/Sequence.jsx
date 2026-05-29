@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import PropTypes from 'prop-types';
 
 import {
@@ -44,7 +44,6 @@ const Sequence = ({
   } = useModel('courseHomeMeta', courseId);
   const sequence = useModel('sequences', sequenceId);
   const section = useModel('sections', sequence ? sequence.sectionId : null);
-  const unit = useModel('units', unitId);
   const sequenceStatus = useSelector(state => state.courseware.sequenceStatus);
   const sequenceMightBeUnit = useSelector(state => state.courseware.sequenceMightBeUnit);
 
@@ -129,20 +128,8 @@ const Sequence = ({
     global.addEventListener('message', receiveMessage);
   }, []);
 
-  const [unitHasLoaded, setUnitHasLoaded] = useState(false);
-  const handleUnitLoaded = () => {
-    setUnitHasLoaded(true);
-  };
-
-  // We want hide the unit navigation if we're in the middle of navigating to another unit
-  // but not if other things about the unit change, like the bookmark status.
-  // The array property of this useEffect ensures that we only hide the unit navigation
-  // while navigating to another unit.
-  useEffect(() => {
-    if (unit) {
-      setUnitHasLoaded(false);
-    }
-  }, [(unit || {}).id]);
+  // eslint-disable-next-line no-unused-vars
+  const handleUnitLoaded = () => {};
 
   // If sequence might be a unit, we want to keep showing a spinner - the courseware container will redirect us when
   // it knows which sequence to actually go to.
@@ -224,7 +211,6 @@ const Sequence = ({
               isOriginalUserStaff={originalUserIsStaff}
               renderUnitNavigation={renderUnitNavigation}
             />
-            {unitHasLoaded && renderUnitNavigation(false)}
           </div>
         </div>
         <NotificationsDiscussionsSidebarSlot courseId={courseId} />
