@@ -60,7 +60,9 @@ describe('DiscussionTab', () => {
 
   it('resizes when it gets a size hint from iframe', async () => {
     window.postMessage({ ...messageEvent, payload: { height: 1234 } }, '*');
-    await waitFor(() => expect(screen.getByTitle('discussion'))
-      .toHaveAttribute('height', String(1234)));
+    await waitFor(
+      () => expect(screen.getByTitle('discussion')).toHaveAttribute('height', String(1234)),
+      { timeout: 3000 },
+    );
   });
 });

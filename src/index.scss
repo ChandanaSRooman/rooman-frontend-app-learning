@@ -466,3 +466,201 @@
 @import "course-tabs/course-tabs-navigation.scss";
 @import "courseware/course/sidebar/common/SidebarBase.scss";
 @import "courseware/course/sidebar/sidebars/course-outline/CourseOutlineTray.scss";
+
+// ── Rooman: fixed-viewport learning page layout ──────────────────────────────
+html, body {
+  height: 100vh;
+  overflow: hidden;
+}
+
+#root,
+#root > div,
+#root > div > div {
+  height: 100vh;
+  overflow: hidden;
+}
+
+#root {
+  .app-container {
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  main {
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  #main-content {
+    overflow: hidden;
+    padding-bottom: 0;
+    min-height: 0;
+  }
+}
+
+// Breadcrumb row hidden — triggers moved to tabs nav
+.position-relative.d-flex.align-items-xl-center.mb-4 { display: none; }
+.top-unit-navigation { display: none; }
+.text-right.small.py-1 { display: none; }
+
+// Sequence layout
+.d-flex.flex-column.flex-grow-1.justify-content-center {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.sequence-container {
+  flex: 1;
+  min-height: 0;
+  height: auto;
+  overflow: hidden;
+  align-items: stretch;
+  margin-bottom: 0;
+}
+
+// Sidebar — stretches to fill height, scrolls internally when content overflows
+.outline-sidebar-wrapper {
+  align-self: stretch;
+  height: auto;
+  max-height: none;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  position: static;
+  max-width: 370px;
+  min-width: 180px;
+  flex-shrink: 0;
+  font-size: 13px;
+
+  .pgn__collapsible-trigger,
+  .pgn__collapsible { padding-top: 4px; padding-bottom: 4px; }
+
+  button, a {
+    padding-top: 4px;
+    padding-bottom: 4px;
+    padding-left: 8px;
+    padding-right: 8px;
+    min-height: 0;
+  }
+
+  .py-3 { padding-top: 6px !important; padding-bottom: 6px !important; }
+  .py-2 { padding-top: 4px !important; padding-bottom: 4px !important; }
+  .px-3 { padding-left: 8px !important; padding-right: 8px !important; }
+  .mb-3 { margin-bottom: 4px !important; }
+  .mb-2 { margin-bottom: 2px !important; }
+  .mt-2, .mt-3 { margin-top: 4px !important; }
+
+  p, small { margin-bottom: 2px; }
+  .pgn__icon { width: 16px; height: 16px; }
+}
+
+// Right panel
+.sequence.w-100 {
+  height: 100%;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.unit-container {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding-top: 8px;
+  padding-bottom: 0;
+  padding-left: 8px;
+  padding-right: 8px;
+  margin-left: 0;
+  margin-right: 0;
+  width: 100%;
+  max-width: none;
+}
+
+.unit {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.unit-iframe-wrapper {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  margin: 0;
+}
+
+#unit-iframe { height: 100%; }
+
+// ── Rooman: compact unit title row ───────────────────────────────────────────
+// Layout: [Previous] [Title] [Bookmark] [Next] all in one row
+.rooman-unit-title-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 0 4px;
+
+  // display:contents makes .unit-navigation invisible as a box —
+  // its children (.previous-button, .next-button) become direct flex
+  // items of .rooman-unit-title-row so CSS order can position them.
+  > .unit-navigation { display: contents; }
+
+  .previous-button {
+    order: 1;
+    flex-shrink: 0;
+    padding: 2px 10px !important;
+    font-size: 12px !important;
+    height: 28px !important;
+  }
+
+  .rooman-unit-title-text {
+    order: 2;
+    flex: 1;
+    overflow: hidden;
+    min-width: 0;
+
+    h3 {
+      font-size: 15px !important;
+      margin: 0 !important;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  }
+
+  .pgn__stateful-btn {
+    order: 3;
+    flex-shrink: 0;
+    padding: 2px 6px !important;
+    font-size: 12px !important;
+  }
+
+  .next-button {
+    order: 4;
+    flex-shrink: 0;
+    padding: 2px 10px !important;
+    font-size: 12px !important;
+    height: 28px !important;
+  }
+}
+
+// ── Rooman: compact footer ────────────────────────────────────────────────────
+footer.footer {
+  padding-top: 6px;
+  padding-bottom: 6px;
+
+  img { height: 24px; }
+
+  &::after {
+    content: '© All Rights Reserved';
+    font-size: 11px;
+    color: #888;
+    margin-left: auto;
+    align-self: center;
+    padding-right: 8px;
+  }
+}

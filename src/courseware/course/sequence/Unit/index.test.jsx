@@ -14,7 +14,7 @@ const defaultProps = {
   onLoaded: jest.fn().mockName('props.onLoaded'),
   id: 'unit-id',
   isOriginalUserStaff: false,
-  renderUnitNavigation: jest.fn(enabled => enabled && 'UnitNaviagtion'),
+  renderUnitNavigation: jest.fn(() => 'UnitNaviagtion'),
 };
 
 const unit = {
@@ -58,7 +58,7 @@ describe('<Unit />', () => {
       renderComponent(defaultProps);
       const unitTitleWrapper = screen.getByTestId('org.openedx.frontend.learning.unit_title.v1').children[0];
 
-      expect(unitTitleWrapper.children).toHaveLength(3);
+      expect(unitTitleWrapper.children).toHaveLength(2);
     });
 
     it('renders bookmark button', () => {

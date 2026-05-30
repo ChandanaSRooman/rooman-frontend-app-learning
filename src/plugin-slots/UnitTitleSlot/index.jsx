@@ -24,18 +24,18 @@ const UnitTitleSlot = ({
         renderUnitNavigation,
       }}
     >
-      <div className="d-flex justify-content-between">
-        <div className="mb-0">
+      <div className="rooman-unit-title-row">
+        {renderUnitNavigation(false)}
+        <div className="mb-0 rooman-unit-title-text">
           <h3 className="h3">{unit.title}</h3>
         </div>
-        {renderUnitNavigation(true)}
+        <BookmarkButton
+          unitId={unit.id}
+          isBookmarked={unit.bookmarked}
+          isProcessing={isProcessing}
+        />
       </div>
       <p className="sr-only">{formatMessage(messages.headerPlaceholder)}</p>
-      <BookmarkButton
-        unitId={unit.id}
-        isBookmarked={unit.bookmarked}
-        isProcessing={isProcessing}
-      />
     </PluginSlot>
   );
 };

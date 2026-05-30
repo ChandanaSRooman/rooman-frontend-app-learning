@@ -1432,7 +1432,7 @@ describe('Progress Tab', () => {
       });
       await executeThunk(thunks.fetchProgressTab(courseId), store.dispatch);
       await act(async () => render(<LoadedTabPage courseId={courseId} activeTabSlug="progress">...</LoadedTabPage>, { store }));
-      expect(screen.getByTestId('instructor-toolbar')).toBeInTheDocument();
+      expect(await screen.findByTestId('instructor-toolbar')).toBeInTheDocument();
       expect(screen.getByText('This learner no longer has access to this course. Their access expired on', { exact: false })).toBeInTheDocument();
       expect(screen.getByText('1/1/2020', { exact: false })).toBeInTheDocument();
     });
@@ -1461,7 +1461,7 @@ describe('Progress Tab', () => {
       });
       await executeThunk(thunks.fetchProgressTab(courseId), store.dispatch);
       await act(async () => render(<LoadedTabPage courseId={courseId} activeTabSlug="progress">...</LoadedTabPage>, { store }));
-      expect(screen.getByTestId('instructor-toolbar')).toBeInTheDocument();
+      expect(await screen.findByTestId('instructor-toolbar')).toBeInTheDocument();
       expect(screen.getByText('This learner does not yet have access to this course. The course starts on', { exact: false })).toBeInTheDocument();
       expect(screen.getByText('1/1/2999', { exact: false })).toBeInTheDocument();
     });

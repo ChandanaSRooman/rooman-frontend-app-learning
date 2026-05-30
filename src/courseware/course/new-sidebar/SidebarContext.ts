@@ -32,6 +32,22 @@ export interface SidebarContextData {
   isDiscussionbarAvailable: boolean;
 }
 
-const SidebarContext = React.createContext<SidebarContextData>({} as SidebarContextData);
+const SidebarContext = React.createContext<SidebarContextData>({
+  toggleSidebar: () => {},
+  onNotificationSeen: () => {},
+  setNotificationStatus: () => {},
+  currentSidebar: null,
+  notificationStatus: 'inactive',
+  upgradeNotificationCurrentState: 'accessDateView',
+  setUpgradeNotificationCurrentState: () => {},
+  shouldDisplaySidebarOpen: false,
+  shouldDisplayFullScreen: false,
+  courseId: '',
+  unitId: '',
+  hideDiscussionbar: false,
+  hideNotificationbar: false,
+  isNotificationbarAvailable: false,
+  isDiscussionbarAvailable: false,
+});
 
 export default SidebarContext;
