@@ -16,6 +16,8 @@ import SidebarTriggers from '../../SidebarTriggers';
 import DiscussionsNotificationsSidebar from './DiscussionsNotificationsSidebar';
 
 initializeMockApp();
+jest.mock('@edx/frontend-platform/analytics');
+jest.mock('@edx/frontend-platform/logging');
 
 const Wrapper = ({ courseId }: { courseId: string }) => {
   const [currentSidebar, setCurrentSidebar] = useState<SidebarId | null>(null);
