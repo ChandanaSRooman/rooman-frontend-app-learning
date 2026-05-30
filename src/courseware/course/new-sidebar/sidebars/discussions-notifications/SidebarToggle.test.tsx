@@ -6,7 +6,9 @@
  */
 import React, { useState } from 'react';
 
-import { render, screen, act, fireEvent, waitFor, initializeMockApp } from '../../../../../setupTest';
+import {
+  render, screen, act, fireEvent, waitFor, initializeMockApp,
+} from '../../../../../setupTest';
 import initializeStore from '../../../../../store';
 
 import SidebarContext from '../../SidebarContext';
