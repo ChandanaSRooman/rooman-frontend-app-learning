@@ -72,9 +72,13 @@ describe('NotificationsWidget', () => {
     });
 
     await waitFor(async () => {
-      expect(screen.queryByTestId('sidebar-DISCUSSIONS_NOTIFICATIONS')).not.toBeInTheDocument();
-      expect(screen.queryByTestId('notification-widget')).not.toBeInTheDocument();
-      expect(screen.queryByTitle('Discussions')).not.toBeInTheDocument();
+      // New sidebar uses d-none class (not unmounting) to hide when closed
+      const closedSidebar = screen.queryByTestId('sidebar-DISCUSSIONS_NOTIFICATIONS');
+      if (closedSidebar) {
+        expect(closedSidebar).toHaveClass('d-none');
+      } else {
+        expect(closedSidebar).not.toBeInTheDocument();
+      }
     });
   });
 

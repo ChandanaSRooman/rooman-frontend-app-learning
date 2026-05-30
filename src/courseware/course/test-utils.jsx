@@ -32,18 +32,24 @@ const setupDiscussionSidebar = async (HomeMetaParams) => {
   const courseHomeMetadata = Factory.build('courseHomeMetadata', { ...snakeCaseObject(params) });
   const testStore = await initializeTestStore({ provider: 'openedx', courseHomeMetadata });
   const state = testStore.getState();
+
+  // Use testStore's courseId so model lookups (courseHomeMeta) work correctly.
+  // initializeTestStore uses factory sequence counters so both stores may have different courseIds.
+  const testCourseId = state.courseware.courseId;
+  mockData.courseId = testCourseId;
+
   const axiosMock = new MockAdapter(getAuthenticatedHttpClient());
-  axiosMock.onGet(`${getConfig().LMS_BASE_URL}/api/discussion/v1/courses/${courseId}`).reply(200, { provider: 'openedx' });
+  axiosMock.onGet(`${getConfig().LMS_BASE_URL}/api/discussion/v1/courses/${testCourseId}`).reply(200, { provider: 'openedx' });
   const topicsResponse = buildTopicsFromUnits(state.models.units, params.enabledInContext);
-  axiosMock.onGet(`${getConfig().LMS_BASE_URL}/api/discussion/v2/course_topics/${courseId}`)
+  axiosMock.onGet(`${getConfig().LMS_BASE_URL}/api/discussion/v2/course_topics/${testCourseId}`)
     .reply(200, topicsResponse);
 
-  await executeThunk(thunks.getCourseDiscussionTopics(courseId), testStore.dispatch);
+  await executeThunk(thunks.getCourseDiscussionTopics(testCourseId), testStore.dispatch);
   const [firstUnitId] = Object.keys(state.models.units);
   mockData.unitId = firstUnitId;
   const [firstSequenceId] = Object.keys(state.models.sequences);
   mockData.sequenceId = firstSequenceId;
-  const contextValue = { courseId: mockData.courseId, currentSidebar: null, toggleSidebar: jest.fn() };
+  const contextValue = { courseId: testCourseId, currentSidebar: null, toggleSidebar: jest.fn() };
 
   const wrapper = await render(
     <SidebarContext.Provider value={contextValue}>
