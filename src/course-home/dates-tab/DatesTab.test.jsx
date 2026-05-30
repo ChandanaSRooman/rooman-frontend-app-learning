@@ -97,7 +97,7 @@ describe('DatesTab', () => {
     });
 
     it('handles unreleased & complete', async () => {
-      const { header } = await getDay('Mon, May 4, 2020');
+      const { header } = await getDay('Sun, May 3, 2020');
       const badges = within(header).getAllByTestId('dates-badge');
       expect(badges).toHaveLength(2);
       expect(badges[0]).toHaveTextContent('Completed');
@@ -105,7 +105,7 @@ describe('DatesTab', () => {
     });
 
     it('handles unreleased & past due', async () => {
-      const { header } = await getDay('Tue, May 5, 2020');
+      const { header } = await getDay('Mon, May 4, 2020');
       const badges = within(header).getAllByTestId('dates-badge');
       expect(badges).toHaveLength(2);
       expect(badges[0]).toHaveTextContent('Past due');
@@ -124,7 +124,7 @@ describe('DatesTab', () => {
     });
 
     it('same status items have header badge', async () => {
-      const { day, header } = await getDay('Wed, May 27, 2020');
+      const { day, header } = await getDay('Tue, May 26, 2020');
       const badge = within(header).getByTestId('dates-badge');
       expect(badge).toHaveTextContent('Past due'); // one header badge
       expect(within(day).getAllByTestId('dates-badge')).toHaveLength(1); // no other badges

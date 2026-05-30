@@ -8,7 +8,6 @@ import Tabs from '../generic/tabs/Tabs';
 import { CoursewareSearch, CoursewareSearchToggle } from '../course-home/courseware-search';
 import { useCoursewareSearchState } from '../course-home/courseware-search/hooks';
 import { NotificationsDiscussionsSidebarTriggerSlot } from '../plugin-slots/NotificationsDiscussionsSidebarTriggerSlot';
-import { CourseOutlineMobileSidebarTriggerSlot } from '../plugin-slots/CourseOutlineMobileSidebarTriggerSlot';
 
 const CourseTabsNavigation = ({
   activeTabSlug, className, tabs, courseId,
@@ -41,7 +40,6 @@ const CourseTabsNavigation = ({
           </div>
           {courseId && (
             <div className="d-flex align-items-center ml-2">
-              <CourseOutlineMobileSidebarTriggerSlot />
               <NotificationsDiscussionsSidebarTriggerSlot courseId={courseId} />
             </div>
           )}

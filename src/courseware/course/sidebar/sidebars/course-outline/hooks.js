@@ -53,7 +53,7 @@ export const useCourseOutlineSidebar = () => {
   const {
     entranceExamEnabled,
     entranceExamPassed,
-  } = course.entranceExamData || {};
+  } = course?.entranceExamData || {};
   const isActiveEntranceExam = entranceExamEnabled && !entranceExamPassed;
 
   const collapseSidebar = () => {
