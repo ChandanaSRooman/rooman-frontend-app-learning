@@ -49,12 +49,27 @@ FROM docker.io/caddy:2-alpine AS server
 
 COPY --from=builder /app/dist /usr/share/caddy
 
+# The app is built with PUBLIC_PATH=/learning/, so the browser requests assets
+# as /learning/runtime.xxx.js and the Tutor MFE proxy forwards that prefix
+# INTACT to this container. The dist files live at the caddy root (not in a
+# /learning/ subdir), so we must strip the prefix with handle_path — otherwise
+# /learning/*.js falls through to index.html and is served as text/html,
+# breaking every script/stylesheet ("Uncaught SyntaxError: got '<'"). The
+# bare handle{} block is a fallback for the case where the prefix is stripped
+# upstream.
 RUN printf '%s\n' \
     ':8080 {' \
-    '  root * /usr/share/caddy' \
     '  encode gzip' \
-    '  try_files {path} {path}/index.html /index.html' \
-    '  file_server' \
+    '  handle_path /learning/* {' \
+    '    root * /usr/share/caddy' \
+    '    try_files {path} {path}/index.html /index.html' \
+    '    file_server' \
+    '  }' \
+    '  handle {' \
+    '    root * /usr/share/caddy' \
+    '    try_files {path} {path}/index.html /index.html' \
+    '    file_server' \
+    '  }' \
     '}' \
     > /etc/caddy/Caddyfile
 
