@@ -7,9 +7,8 @@
 import React, { useState } from 'react';
 
 import {
-  render, screen, act, fireEvent, waitFor, initializeMockApp,
+  render, screen, act, fireEvent, waitFor, initializeMockApp, initializeTestStore,
 } from '../../../../../setupTest';
-import initializeStore from '../../../../../store';
 
 import SidebarContext from '../../SidebarContext';
 import type { SidebarContextData, SidebarId } from '../../SidebarContext';
@@ -18,7 +17,7 @@ import DiscussionsNotificationsSidebar from './DiscussionsNotificationsSidebar';
 
 initializeMockApp();
 
-const Wrapper = () => {
+const Wrapper = ({ courseId }: { courseId: string }) => {
   const [currentSidebar, setCurrentSidebar] = useState<SidebarId | null>(null);
 
   const contextValue: SidebarContextData = {
@@ -34,7 +33,7 @@ const Wrapper = () => {
     setUpgradeNotificationCurrentState: () => {},
     shouldDisplaySidebarOpen: false,
     shouldDisplayFullScreen: false,
-    courseId: 'test-course-id',
+    courseId,
     unitId: 'test-unit-id',
     hideDiscussionbar: false,
     hideNotificationbar: false,
@@ -51,13 +50,15 @@ const Wrapper = () => {
 
 describe('DiscussionsNotificationsSidebar toggle', () => {
   let store;
+  let courseId: string;
 
-  beforeEach(() => {
-    store = initializeStore();
+  beforeEach(async () => {
+    store = await initializeTestStore();
+    courseId = store.getState().courseware.courseId;
   });
 
   it('opens sidebar on trigger click and hides on second click', async () => {
-    render(<Wrapper />, { store });
+    render(<Wrapper courseId={courseId} />, { store });
 
     const btn = await screen.findByRole('button', { name: /Show sidebar tray/i });
 
