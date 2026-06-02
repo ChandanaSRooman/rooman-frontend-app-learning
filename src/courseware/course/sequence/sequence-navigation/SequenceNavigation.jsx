@@ -77,11 +77,13 @@ const SequenceNavigation = ({
 
   const renderNextButton = () => {
     let buttonText;
-    const { exitActive, exitText } = GetCourseExitNavigation(courseId, intl);
-    const disabled = isLastUnit && !exitActive;
+    const { exitText } = GetCourseExitNavigation(courseId, intl);
+    // Always enable the button — at the last unit it navigates to the
+    // course-end / certificate page regardless of exit mode.
+    const disabled = false;
 
-    if (isLastUnit && exitText) {
-      buttonText = exitText;
+    if (isLastUnit) {
+      buttonText = exitText || intl.formatMessage(messages.finishCourseButton);
     } else if (!shouldDisplayNotificationTriggerInSequence) {
       buttonText = intl.formatMessage(messages.nextButton);
     }

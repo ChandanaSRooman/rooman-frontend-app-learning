@@ -16,6 +16,11 @@ const messages = defineMessages({
     defaultMessage: 'Previous',
     description: 'Button to return to the previous section',
   },
+  finishCourseButton: {
+    id: 'learn.sequence.navigation.finish.button',
+    defaultMessage: 'Finish Course',
+    description: 'Button shown at the last unit to complete the course',
+  },
 });
 
 export default messages;
