@@ -77,7 +77,7 @@ const SequenceNavigation = ({
 
   const renderNextButton = () => {
     let buttonText;
-    const { exitActive, exitText } = GetCourseExitNavigation(courseId, intl);
+    const { exitText } = GetCourseExitNavigation(courseId, intl);
     // Always enable at the last unit — course_exit_page_is_active is not
     // returned by this Open edX version's API so exitActive is never true,
     // leaving passing students stuck with a permanently disabled button.
