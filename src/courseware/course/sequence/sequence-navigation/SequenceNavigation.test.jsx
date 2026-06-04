@@ -97,7 +97,7 @@ describe('Sequence Navigation', () => {
     expect(screen.getByRole('link', { name: /next/i })).toBeEnabled();
   });
 
-  it('has the "Next" button disabled for the last unit of the sequence if there is no Exit page', async () => {
+  it('shows "Finish Course" button enabled at the last unit regardless of exit page status', async () => {
     const testMetadata = { ...courseMetadata, certificate_data: { cert_status: 'bogus_status' }, user_has_passing_grade: true };
     const testStore = await initializeTestStore({ courseMetadata: testMetadata, unitBlocks }, false);
     // Have to refetch the sequenceId since the new store generates new sequences
@@ -110,7 +110,7 @@ describe('Sequence Navigation', () => {
     );
 
     expect(screen.getByRole('link', { name: /previous/i })).toBeEnabled();
-    expect(screen.getByRole('button', { name: /next/i })).toBeDisabled();
+    expect(screen.getByRole('link', { name: /finish course/i })).toBeEnabled();
   });
 
   it('displays end of course message instead of the "Next" button as needed', async () => {
