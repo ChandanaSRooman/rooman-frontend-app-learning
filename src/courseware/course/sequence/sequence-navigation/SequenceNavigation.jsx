@@ -77,9 +77,10 @@ const SequenceNavigation = ({
 
   const renderNextButton = () => {
     let buttonText;
-    const { exitText } = GetCourseExitNavigation(courseId, intl);
-    // Always enable the button — at the last unit it navigates to the
-    // course-end / certificate page regardless of exit mode.
+    const { exitActive, exitText } = GetCourseExitNavigation(courseId, intl);
+    // Always enable at the last unit — course_exit_page_is_active is not
+    // returned by this Open edX version's API so exitActive is never true,
+    // leaving passing students stuck with a permanently disabled button.
     const disabled = false;
 
     if (isLastUnit) {

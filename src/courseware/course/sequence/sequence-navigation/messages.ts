@@ -19,7 +19,7 @@ const messages = defineMessages({
   finishCourseButton: {
     id: 'learn.sequence.navigation.finish.button',
     defaultMessage: 'Finish Course',
-    description: 'Button shown at the last unit to complete the course',
+    description: 'Button shown at the last unit to navigate to the certificate page',
   },
 });
 
