@@ -8,7 +8,7 @@ export async function postCourseEnrollment(courseId) {
 }
 
 export async function postPayNow(courseId) {
-  const url = `${getConfig().LMS_BASE_URL}/rooman/pay/${courseId}/`;
+  const url = `${getConfig().LMS_BASE_URL}/rooman/pay/${encodeURIComponent(courseId)}/`;
   const { data } = await getAuthenticatedHttpClient().post(url, {});
   return data;
 }

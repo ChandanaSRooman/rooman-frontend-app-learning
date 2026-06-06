@@ -34,12 +34,22 @@ function useEnrollClickHandler(courseId, orgId, successText) {
 
 export function usePayNowClickHandler(courseId) {
   const [loading, setLoading] = useState(false);
+  const { addFlash } = useContext(UserMessagesContext);
   const payNowClickHandler = useCallback(() => {
     setLoading(true);
     postPayNow(courseId)
       .then(() => { global.location.reload(); })
-      .catch(() => { setLoading(false); });
-  }, [courseId]);
+      .catch(() => {
+        setLoading(false);
+        addFlash({
+          dismissible: true,
+          flash: true,
+          text: 'Enrollment failed. Please try again.',
+          type: ALERT_TYPES.ERROR,
+          topic: 'course',
+        });
+      });
+  }, [courseId, addFlash]);
 
   return { payNowClickHandler, loading };
 }
