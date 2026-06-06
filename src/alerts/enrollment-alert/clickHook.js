@@ -3,7 +3,7 @@ import { sendTrackEvent } from '@edx/frontend-platform/analytics';
 
 import { UserMessagesContext, ALERT_TYPES } from '../../generic/user-messages';
 
-import { postCourseEnrollment } from './data/api';
+import { postCourseEnrollment, postPayNow } from './data/api';
 
 // Separated into its own file to avoid a circular dependency inside this directory
 
@@ -30,6 +30,18 @@ function useEnrollClickHandler(courseId, orgId, successText) {
   }, [addFlash, courseId, orgId, successText]);
 
   return { enrollClickHandler, loading };
+}
+
+export function usePayNowClickHandler(courseId) {
+  const [loading, setLoading] = useState(false);
+  const payNowClickHandler = useCallback(() => {
+    setLoading(true);
+    postPayNow(courseId)
+      .then(() => { global.location.reload(); })
+      .catch(() => { setLoading(false); });
+  }, [courseId]);
+
+  return { payNowClickHandler, loading };
 }
 
 export default useEnrollClickHandler;

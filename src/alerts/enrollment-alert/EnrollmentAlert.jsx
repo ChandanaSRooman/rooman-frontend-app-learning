@@ -9,7 +9,7 @@ import { faSpinner } from '@fortawesome/free-solid-svg-icons';
 import { useModel } from '../../generic/model-store';
 
 import messages from './messages';
-import useEnrollClickHandler from './clickHook';
+import useEnrollClickHandler, { usePayNowClickHandler } from './clickHook';
 
 const EnrollmentAlert = ({ payload }) => {
   const intl = useIntl();
@@ -24,11 +24,14 @@ const EnrollmentAlert = ({ payload }) => {
     org,
   } = useModel('courseHomeMeta', courseId);
 
-  const { enrollClickHandler, loading } = useEnrollClickHandler(
+  const { enrollClickHandler, loading: enrollLoading } = useEnrollClickHandler(
     courseId,
     org,
     intl.formatMessage(messages.success),
   );
+  const { payNowClickHandler, loading: payLoading } = usePayNowClickHandler(courseId);
+
+  const loading = enrollLoading || payLoading;
 
   let text = intl.formatMessage(messages.alert);
   let type = 'warning';
@@ -41,18 +44,34 @@ const EnrollmentAlert = ({ payload }) => {
     text = `${text} ${extraText}`;
   }
 
-  const button = canEnroll && (
+  // Paid course: canEnroll is false because no-id-professional can't be self-enrolled.
+  // Show "Pay Now" button which calls our backend to enroll immediately.
+  const payNowButton = !isStaff && !canEnroll && (
+    <Button
+      disabled={loading}
+      variant="brand"
+      className="ml-2"
+      size="sm"
+      onClick={payNowClickHandler}
+    >
+      Pay Now &amp; Enroll
+      {payLoading && <FontAwesomeIcon icon={faSpinner} spin className="ml-1" />}
+    </Button>
+  );
+
+  const enrollButton = canEnroll && (
     <Button disabled={loading} variant="link" className="p-0 border-0 align-top mx-1" size="sm" style={{ textDecoration: 'underline' }} onClick={enrollClickHandler}>
       {intl.formatMessage(messages.enrollNowSentence)}
+      {enrollLoading && <FontAwesomeIcon icon={faSpinner} spin className="ml-1" />}
     </Button>
   );
 
   return (
     <Alert variant={type} icon={icon}>
-      <div className="d-flex">
-        {text}
-        {button}
-        {loading && <FontAwesomeIcon icon={faSpinner} spin />}
+      <div className="d-flex align-items-center flex-wrap" style={{ gap: '0.5rem' }}>
+        <span>{text}</span>
+        {enrollButton}
+        {payNowButton}
       </div>
     </Alert>
   );
