@@ -27,6 +27,16 @@ const messages = defineMessages({
     defaultMessage: "You've successfully enrolled in this course!",
     description: 'A message telling the user that their course enrollment was successful.',
   },
+  payNowEnroll: {
+    id: 'learning.enrollment.payNow',
+    defaultMessage: 'Pay Now & Enroll',
+    description: 'Button label that enrolls the user in a paid course immediately.',
+  },
+  enrollmentFailed: {
+    id: 'learning.enrollment.failed',
+    defaultMessage: 'Enrollment failed. Please try again.',
+    description: 'Error message shown when Pay Now enrollment fails.',
+  },
 });
 
 export default messages;
