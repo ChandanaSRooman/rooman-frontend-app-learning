@@ -45,8 +45,10 @@ const EnrollmentAlert = ({ payload }) => {
   }
 
   // Paid course: canEnroll is false because no-id-professional can't be self-enrolled.
-  // Show "Pay Now" button which calls our backend to enroll immediately.
-  const payNowButton = !isStaff && !canEnroll && (
+  // Only show "Pay Now" when there is no extra restriction text — extraText being
+  // set means the course enrollment period ended / not yet open / etc. (not a
+  // payment gate), and clicking Pay Now would just return "Not a paid course".
+  const payNowButton = !isStaff && !canEnroll && !extraText && (
     <Button
       disabled={loading}
       variant="brand"

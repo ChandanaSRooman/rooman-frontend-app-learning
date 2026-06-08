@@ -39,12 +39,13 @@ export function usePayNowClickHandler(courseId) {
     setLoading(true);
     postPayNow(courseId)
       .then(() => { global.location.reload(); })
-      .catch(() => {
+      .catch((error) => {
         setLoading(false);
+        const errorMsg = error?.response?.data?.error;
         addFlash({
           dismissible: true,
           flash: true,
-          text: 'Enrollment failed. Please try again.',
+          text: errorMsg || 'Enrollment failed. Please try again.',
           type: ALERT_TYPES.ERROR,
           topic: 'course',
         });
