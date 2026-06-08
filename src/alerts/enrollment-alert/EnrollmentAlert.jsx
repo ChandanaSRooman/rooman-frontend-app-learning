@@ -56,7 +56,7 @@ const EnrollmentAlert = ({ payload }) => {
       size="sm"
       onClick={payNowClickHandler}
     >
-      Pay Now &amp; Enroll
+      {intl.formatMessage(messages.payNowEnroll)}
       {payLoading && <FontAwesomeIcon icon={faSpinner} spin className="ml-1" />}
     </Button>
   );

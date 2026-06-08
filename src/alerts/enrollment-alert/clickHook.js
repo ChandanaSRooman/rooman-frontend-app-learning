@@ -1,9 +1,11 @@
 import { useContext, useState, useCallback } from 'react';
 import { sendTrackEvent } from '@edx/frontend-platform/analytics';
+import { useIntl } from '@edx/frontend-platform/i18n';
 
 import { UserMessagesContext, ALERT_TYPES } from '../../generic/user-messages';
 
 import { postCourseEnrollment, postPayNow } from './data/api';
+import messages from './messages';
 
 // Separated into its own file to avoid a circular dependency inside this directory
 
@@ -33,10 +35,13 @@ function useEnrollClickHandler(courseId, orgId, successText) {
 }
 
 export function usePayNowClickHandler(courseId) {
+  const intl = useIntl();
+  const enrollmentFailedText = intl.formatMessage(messages.enrollmentFailed);
   const [loading, setLoading] = useState(false);
   const { addFlash } = useContext(UserMessagesContext);
   const payNowClickHandler = useCallback(() => {
     setLoading(true);
+    sendTrackEvent('edx.bi.course.paynow.clicked', { courserun_key: courseId });
     postPayNow(courseId)
       .then(() => { global.location.reload(); })
       .catch((error) => {
@@ -45,12 +50,12 @@ export function usePayNowClickHandler(courseId) {
         addFlash({
           dismissible: true,
           flash: true,
-          text: errorMsg || 'Enrollment failed. Please try again.',
+          text: errorMsg || enrollmentFailedText,
           type: ALERT_TYPES.ERROR,
           topic: 'course',
         });
       });
-  }, [courseId, addFlash]);
+  }, [courseId, addFlash, enrollmentFailedText]);
 
   return { payNowClickHandler, loading };
 }
