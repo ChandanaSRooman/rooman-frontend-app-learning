@@ -1,11 +1,12 @@
 /* eslint-disable import/prefer-default-export */
 import React, {
-  useContext, useMemo,
+  useContext, useEffect, useMemo, useState,
 } from 'react';
 import { AppContext } from '@edx/frontend-platform/react';
 
 import { useAlert } from '../../generic/user-messages';
 import { useModel } from '../../generic/model-store';
+import { getCourseMode } from './data/api';
 
 const EnrollmentAlert = React.lazy(() => import('./EnrollmentAlert'));
 
@@ -22,12 +23,23 @@ export function useEnrollmentAlert(courseId) {
    *    3. the course is private.
    */
   const isVisible = !enrolledUser && authenticatedUser !== null && privateOutline;
+
+  const [isPaidCourse, setIsPaidCourse] = useState(false);
+  useEffect(() => {
+    if (isVisible) {
+      getCourseMode(courseId)
+        .then(data => setIsPaidCourse(!!data.is_paid_course))
+        .catch(() => setIsPaidCourse(false));
+    }
+  }, [courseId, isVisible]);
+
   const payload = useMemo(() => ({
     canEnroll: outline && outline.enrollAlert ? outline.enrollAlert.canEnroll : false,
+    isPaidCourse,
     courseId,
     extraText: outline && outline.enrollAlert ? outline.enrollAlert.extraText : '',
     isStaff: course && course.isStaff,
-  }), [course, courseId, outline]);
+  }), [course, courseId, isPaidCourse, outline]);
 
   useAlert(isVisible, {
     code: 'clientEnrollmentAlert',

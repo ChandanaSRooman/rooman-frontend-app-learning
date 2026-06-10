@@ -12,3 +12,9 @@ export async function postPayNow(courseId) {
   const { data } = await getAuthenticatedHttpClient().post(url, {});
   return data;
 }
+
+export async function getCourseMode(courseId) {
+  const url = `${getConfig().LMS_BASE_URL}/rooman/course-mode/${encodeURIComponent(courseId)}/`;
+  const { data } = await getAuthenticatedHttpClient().get(url);
+  return data;
+}
