@@ -15,6 +15,7 @@ const EnrollmentAlert = ({ payload }) => {
   const intl = useIntl();
   const {
     canEnroll,
+    isPaidCourse,
     courseId,
     extraText,
     isStaff,
@@ -48,7 +49,7 @@ const EnrollmentAlert = ({ payload }) => {
   // Only show "Pay Now" when there is no extra restriction text — extraText being
   // set means the course enrollment period ended / not yet open / etc. (not a
   // payment gate), and clicking Pay Now would just return "Not a paid course".
-  const payNowButton = !isStaff && !canEnroll && !extraText && (
+  const payNowButton = !isStaff && isPaidCourse && !extraText && (
     <Button
       disabled={loading}
       variant="brand"
@@ -82,6 +83,7 @@ const EnrollmentAlert = ({ payload }) => {
 EnrollmentAlert.propTypes = {
   payload: PropTypes.shape({
     canEnroll: PropTypes.bool,
+    isPaidCourse: PropTypes.bool,
     courseId: PropTypes.string,
     extraText: PropTypes.string,
     isStaff: PropTypes.bool,
