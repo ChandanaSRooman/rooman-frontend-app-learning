@@ -165,6 +165,11 @@ describe('useIFrameBehavior hook', () => {
           setIframeHeight,
           stateVals.windowTopOffset,
           setWindowTopOffset,
+          false, // isLastUnit (useSequenceNavigationMetadata mock)
+          '/next-unit-link', // nextLink
+          undefined, // nextSequenceId (not set by the default mock)
+          expect.any(Object), // nextSequence (useModel default return)
+          expect.any(Function), // navigate
         ]);
       });
       describe('resize message', () => {
