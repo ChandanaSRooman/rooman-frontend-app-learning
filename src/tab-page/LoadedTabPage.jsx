@@ -14,6 +14,7 @@ import useEnrollmentAlert from '../alerts/enrollment-alert';
 import useLogistrationAlert from '../alerts/logistration-alert';
 
 import ProductTours from '../product-tours/ProductTours';
+import useRoomanLayout from '../hooks/useRoomanLayout';
 
 const LoadedTabPage = ({
   activeTabSlug,
@@ -38,6 +39,8 @@ const LoadedTabPage = ({
   const enrollmentAlert = useEnrollmentAlert(courseId);
 
   const activeTab = tabs.filter(tab => tab.slug === activeTabSlug)[0];
+
+  useRoomanLayout();
 
   const streakLengthToCelebrate = celebrations && celebrations.streakLengthToCelebrate;
   const streakDiscountCouponEnabled = celebrations && celebrations.streakDiscountEnabled && verifiedMode;
