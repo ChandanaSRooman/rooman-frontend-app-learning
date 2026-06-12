@@ -39,7 +39,10 @@ const useIFrameBehavior = ({
   const activeSequence = useModel('sequences', activeSequenceId);
   const activeUnitId = activeSequence.unitIds.length > 0
     ? activeSequence.unitIds[activeSequence.activeUnitIndex] : null;
-  const { isLastUnit, nextLink } = useSequenceNavigationMetadata(activeSequenceId, activeUnitId);
+  const { isLastUnit, nextLink, nextSequenceId } = useSequenceNavigationMetadata(activeSequenceId, activeUnitId);
+  // The subsection auto-advance would land on next; used to avoid dropping the
+  // learner onto a prerequisite lock when the next subsection is still gated.
+  const nextSequence = useModel('sequences', nextSequenceId);
 
   const [iframeHeight, setIframeHeight] = iframeBehaviorState.iframeHeight(0);
   const [hasLoaded, setHasLoaded] = iframeBehaviorState.hasLoaded(false);
@@ -84,7 +87,18 @@ const useIFrameBehavior = ({
     } else if (type === messageTypes.autoAdvance) {
       // We are listening to autoAdvance message to move to next sequence automatically.
       // In case it is the last unit we need not do anything.
-      if (!isLastUnit && nextLink) {
+      if (isLastUnit || !nextLink) {
+        return;
+      }
+      // When auto-advance crosses into the next subsection, don't drop the
+      // learner onto a prerequisite lock: if that subsection is still gated
+      // (e.g. the prerequisite's completion hasn't propagated yet), skip the
+      // jump rather than navigating into the lock. The trigger (the in-iframe
+      // "Start with Lab" button) is re-clickable, so the learner can retry once
+      // the gate opens. Same-subsection advances are never blocked.
+      const crossesToNextSequence = !!nextSequenceId && nextLink.includes(nextSequenceId);
+      const nextIsGated = crossesToNextSequence && !!nextSequence?.gatedContent?.gated;
+      if (!nextIsGated) {
         navigate(nextLink);
       }
     }
@@ -97,6 +111,11 @@ const useIFrameBehavior = ({
     setIframeHeight,
     windowTopOffset,
     setWindowTopOffset,
+    isLastUnit,
+    nextLink,
+    nextSequenceId,
+    nextSequence,
+    navigate,
   ]);
 
   useEventListener('message', receiveMessage);
