@@ -8,6 +8,7 @@ import { sendTrackEvent } from '@edx/frontend-platform/analytics';
 import { fetchCourse } from '@src/courseware/data';
 import { processEvent } from '@src/course-home/data/thunks';
 import { useEventListener } from '@src/generic/hooks';
+import { useModel } from '@src/generic/model-store';
 import { useSequenceNavigationMetadata } from '@src/courseware/course/sequence/sequence-navigation/hooks';
 
 import { messageTypes } from '../constants';
@@ -46,7 +47,7 @@ jest.mock('@src/generic/hooks', () => ({
   useEventListener: jest.fn(),
 }));
 jest.mock('@src/generic/model-store', () => ({
-  useModel: () => ({ unitIds: ['unit1', 'unit2'], entranceExamData: { entranceExamPassed: null } }),
+  useModel: jest.fn(() => ({ unitIds: ['unit1', 'unit2'], entranceExamData: { entranceExamPassed: null } })),
 }));
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
@@ -401,6 +402,43 @@ describe('useIFrameBehavior hook', () => {
       });
       cb(autoAdvanceMessage());
       expect(mockNavigate).not.toHaveBeenCalled();
+    });
+    it('does not navigate when the next subsection is still gated', () => {
+      mockState(defaultStateVals);
+      useSequenceNavigationMetadata.mockReset();
+      useSequenceNavigationMetadata.mockReturnValue({
+        isLastUnit: false,
+        nextLink: '/course/c1/seq-next/first',
+        nextSequenceId: 'seq-next',
+      });
+      // activeSequence call → unitIds; next sequence call → gated.
+      useModel.mockImplementation((type, id) => (
+        id === 'seq-next'
+          ? { gatedContent: { gated: true } }
+          : { unitIds: ['unit1', 'unit2'], entranceExamData: { entranceExamPassed: null } }
+      ));
+      renderHook(() => useIFrameBehavior(props));
+      const { cb } = useEventListener.mock.calls[0][1];
+      cb({ data: { type: messageTypes.autoAdvance } });
+      expect(mockNavigate).not.toHaveBeenCalled();
+    });
+    it('navigates across subsections when the next one is open', () => {
+      mockState(defaultStateVals);
+      useSequenceNavigationMetadata.mockReset();
+      useSequenceNavigationMetadata.mockReturnValue({
+        isLastUnit: false,
+        nextLink: '/course/c1/seq-next/first',
+        nextSequenceId: 'seq-next',
+      });
+      useModel.mockImplementation((type, id) => (
+        id === 'seq-next'
+          ? { gatedContent: { gated: false } }
+          : { unitIds: ['unit1', 'unit2'], entranceExamData: { entranceExamPassed: null } }
+      ));
+      renderHook(() => useIFrameBehavior(props));
+      const { cb } = useEventListener.mock.calls[0][1];
+      cb({ data: { type: messageTypes.autoAdvance } });
+      expect(mockNavigate).toHaveBeenCalledWith('/course/c1/seq-next/first');
     });
   });
 });
