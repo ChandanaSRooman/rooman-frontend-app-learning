@@ -4,7 +4,7 @@ function syncHeaderTabs() {
   const original = document.querySelector('#courseTabsNavigation .nav-underline-tabs');
   const headerCont = document.querySelector('header.learning-header .container-xl');
   const headerEl = document.querySelector('header.learning-header');
-  if (!original || !headerCont || !headerEl) return false;
+  if (!original || !headerCont || !headerEl) { return false; }
 
   let slot = document.getElementById('rooman-header-tabs');
   if (!slot) {
@@ -24,7 +24,7 @@ const useRoomanLayout = () => {
   useEffect(() => {
     let tries = 0;
     const trySync = setInterval(() => {
-      if (syncHeaderTabs() || ++tries > 30) clearInterval(trySync);
+      if (syncHeaderTabs() || ++tries > 30) { clearInterval(trySync); }
     }, 200);
 
     let observer = null;
@@ -44,7 +44,7 @@ const useRoomanLayout = () => {
 
     return () => {
       clearInterval(trySync);
-      if (observer) observer.disconnect();
+      if (observer) { observer.disconnect(); }
       window.removeEventListener('popstate', handlePopState);
       document.getElementById('rooman-header-tabs')?.remove();
       document.querySelector('header.learning-header')?.classList.remove('rooman-trigger-open');
