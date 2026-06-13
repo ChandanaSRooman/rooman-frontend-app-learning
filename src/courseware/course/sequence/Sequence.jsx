@@ -62,8 +62,11 @@ const Sequence = ({
         && (e.origin.endsWith('.rooman.com') || e.origin.endsWith('.sslip.io'));
       if (!ok) { return; }
       const type = e?.data?.type;
-      if (type === 'rooman.lab.mounted') { setLabFullBleed(true); }
-      else if (type === 'rooman.lab.unloaded') { setLabFullBleed(false); }
+      if (type === 'rooman.lab.mounted') {
+        setLabFullBleed(true);
+      } else if (type === 'rooman.lab.unloaded') {
+        setLabFullBleed(false);
+      }
     };
     window.addEventListener('message', onMessage);
     return () => window.removeEventListener('message', onMessage);
