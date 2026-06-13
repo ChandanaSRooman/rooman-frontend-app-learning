@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import PropTypes from 'prop-types';
 import { Helmet } from 'react-helmet';
 
@@ -39,12 +40,70 @@ const LoadedTabPage = ({
 
   const activeTab = tabs.filter(tab => tab.slug === activeTabSlug)[0];
 
+  // Inject course tabs into the header via React Portal.
+  // A portal target <div> is created once inside the header container; React then manages
+  // the tab list content (proper lifecycle, no innerHTML cloning, no duplicate IDs).
+  // If the header selector is unavailable after 30 tries, the original #courseTabsNavigation
+  // is un-hidden as a fallback so course navigation always remains accessible.
+  const [headerTabsTarget, setHeaderTabsTarget] = useState(null);
+  useEffect(() => {
+    let tries = 0;
+
+    const tryMount = () => {
+      const existing = document.getElementById('rooman-header-tabs');
+      if (existing) {
+        setHeaderTabsTarget(existing);
+        return true;
+      }
+      const headerEl = document.querySelector('header.learning-header .container-xl');
+      if (!headerEl) {
+        return false;
+      }
+      const slot = document.createElement('div');
+      slot.id = 'rooman-header-tabs';
+      const lockup = headerEl.querySelector('.course-title-lockup');
+      headerEl.insertBefore(slot, lockup ? lockup.nextSibling : null);
+      setHeaderTabsTarget(slot);
+      return true;
+    };
+
+    const interval = setInterval(() => {
+      if (tryMount() || ++tries > 30) {
+        clearInterval(interval);
+        // Fallback: if portal couldn't mount, show the original nav so tabs still work.
+        if (tries > 30 && !document.getElementById('rooman-header-tabs')) {
+          document.querySelector('#courseTabsNavigation')?.classList.add('rooman-tabs-fallback');
+        }
+      }
+    }, 200);
+
+    return () => {
+      clearInterval(interval);
+      // Always remove by ID so cleanup works whether we created the slot or found an existing one.
+      document.getElementById('rooman-header-tabs')?.remove();
+      document.querySelector('#courseTabsNavigation')?.classList.remove('rooman-tabs-fallback');
+      setHeaderTabsTarget(null);
+    };
+  }, []);
+
   const streakLengthToCelebrate = celebrations && celebrations.streakLengthToCelebrate;
   const streakDiscountCouponEnabled = celebrations && celebrations.streakDiscountEnabled && verifiedMode;
   const [isStreakCelebrationOpen,, closeStreakCelebration] = useToggle(streakLengthToCelebrate);
 
   return (
     <>
+      {headerTabsTarget && createPortal(
+        <ul className="nav-underline-tabs" role="tablist" aria-label="Course navigation">
+          {tabs.map(({ url, title: tabTitle, slug }) => (
+            <li key={slug} className="nav-item flex-shrink-0">
+              <a href={url} className={`nav-link${slug === activeTabSlug ? ' active' : ''}`}>
+                {tabTitle}
+              </a>
+            </li>
+          ))}
+        </ul>,
+        headerTabsTarget,
+      )}
       <ProductTours
         activeTab={activeTabSlug}
         courseId={courseId}
