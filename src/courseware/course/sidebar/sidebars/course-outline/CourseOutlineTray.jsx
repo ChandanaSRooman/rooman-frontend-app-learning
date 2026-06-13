@@ -82,6 +82,31 @@ const CourseOutlineTray = () => {
 
   if (courseOutlineStatus === LOADING) {
     return (
+      <>
+        {!shouldDisplayFullScreen && (
+          <div className="outline-sidebar-backdrop" onClick={handleToggleCollapse} aria-hidden="true" />
+        )}
+        <div className={classNames('outline-sidebar-wrapper', {
+          'flex-shrink-0 mr-4 h-auto': !shouldDisplayFullScreen,
+          'bg-white m-0 fixed-top w-100 vh-100': shouldDisplayFullScreen,
+        })}
+        >
+          <section className="outline-sidebar w-100">
+            {sidebarHeading}
+            <PageLoading
+              srMessage={intl.formatMessage(messages.loading)}
+            />
+          </section>
+        </div>
+      </>
+    );
+  }
+
+  return (
+    <>
+      {!shouldDisplayFullScreen && (
+        <div className="outline-sidebar-backdrop" onClick={handleToggleCollapse} aria-hidden="true" />
+      )}
       <div className={classNames('outline-sidebar-wrapper', {
         'flex-shrink-0 mr-4 h-auto': !shouldDisplayFullScreen,
         'bg-white m-0 fixed-top w-100 vh-100': shouldDisplayFullScreen,
@@ -89,44 +114,29 @@ const CourseOutlineTray = () => {
       >
         <section className="outline-sidebar w-100">
           {sidebarHeading}
-          <PageLoading
-            srMessage={intl.formatMessage(messages.loading)}
-          />
+          <ol id="outline-sidebar-outline" className="list-unstyled">
+            {isDisplaySequenceLevel
+              ? sequenceIds.map((sequenceId) => (
+                <SidebarSequence
+                  key={sequenceId}
+                  courseId={courseId}
+                  sequence={sequences[sequenceId]}
+                  defaultOpen={sequenceId === activeSequenceId}
+                  activeUnitId={unitId}
+                />
+              ))
+              : sectionsIds.map((sectionId) => (
+                <SidebarSection
+                  key={sectionId}
+                  courseId={courseId}
+                  section={sections[sectionId]}
+                  handleSelectSection={handleSelectSection}
+                />
+              ))}
+          </ol>
         </section>
       </div>
-    );
-  }
-
-  return (
-    <div className={classNames('outline-sidebar-wrapper', {
-      'flex-shrink-0 mr-4 h-auto': !shouldDisplayFullScreen,
-      'bg-white m-0 fixed-top w-100 vh-100': shouldDisplayFullScreen,
-    })}
-    >
-      <section className="outline-sidebar w-100">
-        {sidebarHeading}
-        <ol id="outline-sidebar-outline" className="list-unstyled">
-          {isDisplaySequenceLevel
-            ? sequenceIds.map((sequenceId) => (
-              <SidebarSequence
-                key={sequenceId}
-                courseId={courseId}
-                sequence={sequences[sequenceId]}
-                defaultOpen={sequenceId === activeSequenceId}
-                activeUnitId={unitId}
-              />
-            ))
-            : sectionsIds.map((sectionId) => (
-              <SidebarSection
-                key={sectionId}
-                courseId={courseId}
-                section={sections[sectionId]}
-                handleSelectSection={handleSelectSection}
-              />
-            ))}
-        </ol>
-      </section>
-    </div>
+    </>
   );
 };
 

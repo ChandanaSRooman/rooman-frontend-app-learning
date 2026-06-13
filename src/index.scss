@@ -691,6 +691,16 @@ body:has(.outline-sidebar-heading-wrapper.collapsed) header.learning-header {
   .pgn__collapsible { margin-bottom: 0 !important; }
 }
 
+// Backdrop rendered by CourseOutlineTray when sidebar is open in overlay mode.
+// z-index 199 puts it between content (0) and the sidebar panel (200).
+.outline-sidebar-backdrop {
+  position: absolute !important;
+  inset: 0 !important;
+  z-index: 199 !important;
+  background: rgba(0, 0, 0, .25) !important;
+  cursor: pointer !important;
+}
+
 .outline-sidebar-heading-wrapper:not(.collapsed) {
   background: var(--dl-sidebar-bg) !important;
   border-bottom: none !important;
@@ -875,8 +885,10 @@ footer.footer { display: none !important; }
 
 // ── Course Home / Outline Tab ─────────────────────────────────────────────────
 
-// Course title is already in the header — hide the redundant h2 row
-div[data-learner-type].row { display: none !important; }
+// Course title is already in the header — hide the redundant h2 row.
+// .w-100.mx-0 anchors this to the specific title div in OutlineTab.jsx (line ~121);
+// data-learner-type is not used anywhere else in the outline tab tree.
+div[data-learner-type].row.w-100.mx-0 { display: none !important; }
 
 // Give the outline content some breathing room
 .row.course-outline-tab { padding: 16px 8px 24px !important; }
