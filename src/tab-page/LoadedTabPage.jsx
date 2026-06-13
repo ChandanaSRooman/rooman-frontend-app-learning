@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import PropTypes from 'prop-types';
 import { Helmet } from 'react-helmet';
 
@@ -14,7 +15,6 @@ import useEnrollmentAlert from '../alerts/enrollment-alert';
 import useLogistrationAlert from '../alerts/logistration-alert';
 
 import ProductTours from '../product-tours/ProductTours';
-import useRoomanLayout from '../hooks/useRoomanLayout';
 
 const LoadedTabPage = ({
   activeTabSlug,
@@ -40,7 +40,42 @@ const LoadedTabPage = ({
 
   const activeTab = tabs.filter(tab => tab.slug === activeTabSlug)[0];
 
-  useRoomanLayout();
+  // Inject course tabs into the header via React Portal.
+  // A portal target <div> is created once inside the header container; React then manages
+  // the tab list content (proper lifecycle, no innerHTML cloning, no duplicate IDs).
+  const [headerTabsTarget, setHeaderTabsTarget] = useState(null);
+  useEffect(() => {
+    let slot = null;
+    let tries = 0;
+
+    const tryMount = () => {
+      const existing = document.getElementById('rooman-header-tabs');
+      if (existing) {
+        setHeaderTabsTarget(existing);
+        return true;
+      }
+      const headerEl = document.querySelector('header.learning-header .container-xl');
+      if (!headerEl) {
+        return false;
+      }
+      slot = document.createElement('div');
+      slot.id = 'rooman-header-tabs';
+      const lockup = headerEl.querySelector('.course-title-lockup');
+      headerEl.insertBefore(slot, lockup ? lockup.nextSibling : null);
+      setHeaderTabsTarget(slot);
+      return true;
+    };
+
+    const interval = setInterval(() => {
+      if (tryMount() || ++tries > 30) { clearInterval(interval); }
+    }, 200);
+
+    return () => {
+      clearInterval(interval);
+      if (slot) { slot.remove(); }
+      setHeaderTabsTarget(null);
+    };
+  }, []);
 
   const streakLengthToCelebrate = celebrations && celebrations.streakLengthToCelebrate;
   const streakDiscountCouponEnabled = celebrations && celebrations.streakDiscountEnabled && verifiedMode;
@@ -48,6 +83,18 @@ const LoadedTabPage = ({
 
   return (
     <>
+      {headerTabsTarget && createPortal(
+        <ul className="nav-underline-tabs" role="tablist" aria-label="Course navigation">
+          {tabs.map(({ url, title: tabTitle, slug }) => (
+            <li key={slug} className="nav-item flex-shrink-0">
+              <a href={url} className={`nav-link${slug === activeTabSlug ? ' active' : ''}`}>
+                {tabTitle}
+              </a>
+            </li>
+          ))}
+        </ul>,
+        headerTabsTarget,
+      )}
       <ProductTours
         activeTab={activeTabSlug}
         courseId={courseId}

@@ -196,6 +196,10 @@ initialize({
         PRIVACY_POLICY_URL: process.env.PRIVACY_POLICY_URL || null,
         SHOW_UNGRADED_ASSIGNMENT_PROGRESS: process.env.SHOW_UNGRADED_ASSIGNMENT_PROGRESS || false,
         ENABLE_XPERT_AUDIT: process.env.ENABLE_XPERT_AUDIT || false,
+        pluginSlots: {
+          // Remove the Help link from the learning header entirely via the plugin framework.
+          'org.openedx.frontend.layout.header_learning_help.v1': { keepDefault: false, plugins: [] },
+        },
       }, 'LearnerAppConfig');
     },
   },

@@ -510,11 +510,6 @@ header.learning-header {
     gap: 0 !important;
   }
 
-  &.rooman-trigger-open {
-    .container-xl,
-    .container-xl.py-2 { padding-left: 58px !important; }
-  }
-
   .logo img { height: 1.4rem !important; }
 
   .course-title-lockup {
@@ -550,7 +545,14 @@ header.learning-header {
   }
 }
 
-// ── Course tabs cloned into header by useRoomanLayout hook ────────────────────
+// Shift header content right when the sidebar-collapse trigger is pinned top-left.
+// Uses :has() so no JS is needed — supported in all modern browsers.
+body:has(.outline-sidebar-heading-wrapper.collapsed) header.learning-header {
+  .container-xl,
+  .container-xl.py-2 { padding-left: 58px !important; }
+}
+
+// ── Course tabs injected into header via React Portal ─────────────────────────
 #rooman-header-tabs {
   flex: 1 !important;
   display: flex !important;
@@ -558,7 +560,8 @@ header.learning-header {
   height: 100% !important;
   justify-content: center !important;
 
-  ul, ol {
+  // Portal renders <ul> directly inside this div
+  ul {
     display: flex !important;
     list-style: none !important;
     margin: 0 !important;
@@ -773,12 +776,12 @@ header.learning-header {
   overflow: hidden !important;
 }
 
-// column-reverse: ContentIFrame (last in DOM) floats to top, UnitTitleSlot (first) sinks to bottom
+// UnitTitleSlot renders after ContentIFrame in Unit/index.jsx so the nav bar sits naturally at bottom.
 .unit {
   flex: 1 !important;
   min-height: 0 !important;
   display: flex !important;
-  flex-direction: column-reverse !important;
+  flex-direction: column !important;
   overflow: hidden !important;
 }
 
@@ -806,8 +809,6 @@ header.learning-header {
   .rooman-unit-title-text { display: none !important; }
   > button, > .btn { display: none !important; }
 }
-
-.unit p.sr-only { display: none !important; }
 
 .unit-navigation {
   display: flex !important;
@@ -853,4 +854,3 @@ header.learning-header {
 .text-right.small.py-1 { display: none !important; }
 .course-license { display: none !important; }
 footer.footer { display: none !important; }
-header.learning-header a.text-gray-700 { display: none !important; }

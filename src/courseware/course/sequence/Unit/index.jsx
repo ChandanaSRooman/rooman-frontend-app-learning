@@ -47,7 +47,6 @@ const Unit = ({
 
   return (
     <div className="unit">
-      <UnitTitleSlot unitId={id} {...{ unit, renderUnitNavigation }} />
       <UnitSuspense {...{ courseId, id }} />
       <ContentIFrame
         elementId="unit-iframe"
@@ -59,6 +58,7 @@ const Unit = ({
         title={unit.title}
         courseId={courseId}
       />
+      <UnitTitleSlot unitId={id} {...{ unit, renderUnitNavigation }} />
     </div>
   );
 };
