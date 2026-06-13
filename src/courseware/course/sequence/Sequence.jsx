@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
-import { useEffect, useState } from 'react';
+import { useEffect, useLayoutEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 
 import {
@@ -55,6 +55,12 @@ const Sequence = ({
   const [labFullBleed, setLabFullBleed] = useState(false);
   useEffect(() => {
     const onMessage = (e) => {
+      // Security: only trust messages from the lab platform / Open edX hosts.
+      // Prod runs under *.rooman.com; the dev box under *.sslip.io. Anything
+      // else (a third-party embed) can't force the unit container full-width.
+      const ok = typeof e.origin === 'string'
+        && (e.origin.endsWith('.rooman.com') || e.origin.endsWith('.sslip.io'));
+      if (!ok) { return; }
       const type = e?.data?.type;
       if (type === 'rooman.lab.mounted') { setLabFullBleed(true); }
       else if (type === 'rooman.lab.unloaded') { setLabFullBleed(false); }
@@ -62,7 +68,9 @@ const Sequence = ({
     window.addEventListener('message', onMessage);
     return () => window.removeEventListener('message', onMessage);
   }, []);
-  useEffect(() => { setLabFullBleed(false); }, [unitId]);
+  // useLayoutEffect so the reset lands before paint — avoids a one-frame flash
+  // of lab-width when navigating from a lab unit to a non-lab unit.
+  useLayoutEffect(() => { setLabFullBleed(false); }, [unitId]);
 
   const handleNext = () => {
     const nextIndex = sequence.unitIds.indexOf(unitId) + 1;

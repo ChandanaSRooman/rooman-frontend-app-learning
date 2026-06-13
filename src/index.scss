@@ -309,6 +309,7 @@
 // 1024px cap above. The class is toggled in Sequence.jsx on rooman.lab.mounted.
 .unit-container--lab {
   max-width: none;
+  width: 100%; // explicit so the lab stretches even if a parent sets a width
 }
 
 .unit-iframe-wrapper {
