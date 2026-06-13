@@ -596,7 +596,10 @@ body:has(.outline-sidebar-heading-wrapper.collapsed) header.learning-header {
   }
 }
 
-#courseTabsNavigation { display: none !important; }
+// Hide the original nav — the portal renders tabs in the header instead.
+// .rooman-tabs-fallback is added by LoadedTabPage if the portal target can't mount,
+// restoring the nav so course navigation is always visible.
+#courseTabsNavigation:not(.rooman-tabs-fallback) { display: none !important; }
 
 // ── Sidebar trigger (closed state — fixed at top-left) ────────────────────────
 .outline-sidebar-heading-wrapper.collapsed {
@@ -795,7 +798,7 @@ body:has(.outline-sidebar-heading-wrapper.collapsed) header.learning-header {
 #unit-iframe { height: 100% !important; width: 100% !important; }
 
 // ── Bottom Previous / Next nav bar ────────────────────────────────────────────
-// Sits at the bottom naturally via column-reverse — no JS ordering needed
+// UnitTitleSlot renders after ContentIFrame in Unit/index.jsx; nav bar sits at bottom naturally.
 .rooman-unit-title-row {
   flex-shrink: 0 !important;
   display: flex !important;

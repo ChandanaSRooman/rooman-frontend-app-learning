@@ -43,9 +43,10 @@ const LoadedTabPage = ({
   // Inject course tabs into the header via React Portal.
   // A portal target <div> is created once inside the header container; React then manages
   // the tab list content (proper lifecycle, no innerHTML cloning, no duplicate IDs).
+  // If the header selector is unavailable after 30 tries, the original #courseTabsNavigation
+  // is un-hidden as a fallback so course navigation always remains accessible.
   const [headerTabsTarget, setHeaderTabsTarget] = useState(null);
   useEffect(() => {
-    let slot = null;
     let tries = 0;
 
     const tryMount = () => {
@@ -58,7 +59,7 @@ const LoadedTabPage = ({
       if (!headerEl) {
         return false;
       }
-      slot = document.createElement('div');
+      const slot = document.createElement('div');
       slot.id = 'rooman-header-tabs';
       const lockup = headerEl.querySelector('.course-title-lockup');
       headerEl.insertBefore(slot, lockup ? lockup.nextSibling : null);
@@ -67,12 +68,20 @@ const LoadedTabPage = ({
     };
 
     const interval = setInterval(() => {
-      if (tryMount() || ++tries > 30) { clearInterval(interval); }
+      if (tryMount() || ++tries > 30) {
+        clearInterval(interval);
+        // Fallback: if portal couldn't mount, show the original nav so tabs still work.
+        if (tries > 30 && !document.getElementById('rooman-header-tabs')) {
+          document.querySelector('#courseTabsNavigation')?.classList.add('rooman-tabs-fallback');
+        }
+      }
     }, 200);
 
     return () => {
       clearInterval(interval);
-      if (slot) { slot.remove(); }
+      // Always remove by ID so cleanup works whether we created the slot or found an existing one.
+      document.getElementById('rooman-header-tabs')?.remove();
+      document.querySelector('#courseTabsNavigation')?.classList.remove('rooman-tabs-fallback');
       setHeaderTabsTarget(null);
     };
   }, []);
