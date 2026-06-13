@@ -568,11 +568,18 @@ body:has(.outline-sidebar-heading-wrapper.collapsed) header.learning-header {
     padding: 0 !important;
     height: 100% !important;
     border: none !important;
+
+    li, li.nav-item {
+      display: flex !important;
+      align-items: stretch !important;
+      height: 100% !important;
+    }
   }
 
   a.nav-link, .nav-link {
     display: flex !important;
     align-items: center !important;
+    height: 100% !important;
     padding: 0 20px !important;
     font-size: .85rem !important;
     font-weight: 500 !important;
@@ -657,23 +664,41 @@ body:has(.outline-sidebar-heading-wrapper.collapsed) header.learning-header {
   align-items: stretch !important;
   margin: 0 !important;
   background: var(--dl-sidebar-bg) !important;
+  position: relative !important;
 }
 
-// ── Sidebar — card sections, rounded pill items, no divider lines ─────────────
+// ── Sidebar — overlay panel (floats above content, does not push it) ──────────
+// position:absolute + z-index makes it layer over the content card when open.
+// .sequence-container has position:relative so the absolute is scoped correctly.
 .outline-sidebar-wrapper {
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  height: 100% !important;
+  z-index: 200 !important;
   width: 300px !important;
   max-width: 300px !important;
   min-width: 300px !important;
-  flex-shrink: 0 !important;
+  margin-right: 0 !important;
   display: block !important;
   background: var(--dl-sidebar-bg) !important;
   border-right: 1px solid var(--dl-border) !important;
-  height: 100% !important;
+  box-shadow: 4px 0 20px rgba(0, 0, 0, .12) !important;
   overflow-y: auto !important;
   overflow-x: hidden !important;
 
   .pgn__icon { width: 14px !important; height: 14px !important; flex-shrink: 0 !important; }
   .pgn__collapsible { margin-bottom: 0 !important; }
+}
+
+// Backdrop rendered by CourseOutlineTray when sidebar is open in overlay mode.
+// z-index 199 puts it between content (0) and the sidebar panel (200).
+.outline-sidebar-backdrop {
+  position: absolute !important;
+  inset: 0 !important;
+  z-index: 199 !important;
+  background: rgba(0, 0, 0, .25) !important;
+  cursor: pointer !important;
 }
 
 .outline-sidebar-heading-wrapper:not(.collapsed) {
@@ -803,8 +828,8 @@ body:has(.outline-sidebar-heading-wrapper.collapsed) header.learning-header {
   flex-shrink: 0 !important;
   display: flex !important;
   align-items: center !important;
-  height: 60px !important;
-  padding: 0 28px !important;
+  height: 52px !important;
+  padding: 0 12px !important;
   overflow: hidden !important;
   background: var(--dl-surface) !important;
   border-top: 1px solid var(--dl-border) !important;
@@ -818,33 +843,33 @@ body:has(.outline-sidebar-heading-wrapper.collapsed) header.learning-header {
   align-items: center !important;
   justify-content: space-between !important;
   width: 100% !important;
-  gap: 16px !important;
+  gap: 8px !important;
 
   .previous-button {
-    font-size: .85rem !important;
+    font-size: .78rem !important;
     font-weight: 500 !important;
-    padding: 10px 28px !important;
-    border-radius: 22px !important;
+    padding: 7px 18px !important;
+    border-radius: 20px !important;
     border: 1px solid var(--dl-border) !important;
     background: var(--dl-surface) !important;
     color: var(--dl-text) !important;
     display: inline-flex !important;
     align-items: center !important;
-    gap: 6px !important;
+    gap: 5px !important;
     cursor: pointer !important;
   }
 
   .next-button {
-    font-size: .85rem !important;
+    font-size: .78rem !important;
     font-weight: 500 !important;
-    padding: 10px 28px !important;
-    border-radius: 22px !important;
+    padding: 7px 18px !important;
+    border-radius: 20px !important;
     background: var(--dl-primary) !important;
     color: #fff !important;
     border: 1px solid var(--dl-primary) !important;
     display: inline-flex !important;
     align-items: center !important;
-    gap: 6px !important;
+    gap: 5px !important;
     cursor: pointer !important;
   }
 
@@ -857,3 +882,145 @@ body:has(.outline-sidebar-heading-wrapper.collapsed) header.learning-header {
 .text-right.small.py-1 { display: none !important; }
 .course-license { display: none !important; }
 footer.footer { display: none !important; }
+
+// ── Course Home / Outline Tab ─────────────────────────────────────────────────
+
+// Course title is already in the header — hide the redundant h2 row.
+// .w-100.mx-0 anchors this to the specific title div in OutlineTab.jsx (line ~121);
+// data-learner-type is not used anywhere else in the outline tab tree.
+div[data-learner-type].row.w-100.mx-0 { display: none !important; }
+
+// Give the outline content some breathing room
+.row.course-outline-tab { padding: 16px 8px 24px !important; }
+
+// ── Resume / Start course card ────────────────────────────────────────────────
+[data-testid="start-resume-card"] {
+  border: none !important;
+  border-radius: 12px !important;
+  background: linear-gradient(135deg, #0056d2 0%, #1d4ed8 100%) !important;
+  box-shadow: 0 3px 12px rgba(0, 86, 210, .22) !important;
+  overflow: hidden !important;
+
+  .pgn__card-header {
+    background: transparent !important;
+    padding: 18px 20px 14px !important;
+    border: none !important;
+
+    .pgn__card-header-title {
+      color: rgba(255, 255, 255, .9) !important;
+      font-family: var(--dl-font) !important;
+      font-size: .875rem !important;
+      font-weight: 500 !important;
+    }
+
+    .pgn__card-header-actions .btn-brand {
+      background: rgba(255, 255, 255, .18) !important;
+      border: 1px solid rgba(255, 255, 255, .5) !important;
+      color: #fff !important;
+      border-radius: 22px !important;
+      font-size: .8125rem !important;
+      font-weight: 600 !important;
+      padding: 7px 24px !important;
+      font-family: var(--dl-font) !important;
+
+      &:hover { background: rgba(255, 255, 255, .28) !important; }
+    }
+  }
+
+  .pgn__card-footer { display: none !important; }
+}
+
+// ── Section accordion cards ───────────────────────────────────────────────────
+.pgn__collapsible--card-lg {
+  border: 1px solid var(--dl-border) !important;
+  border-radius: 10px !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, .05) !important;
+  overflow: hidden !important;
+  margin-bottom: 8px !important;
+
+  .pgn__collapsible-trigger {
+    padding: 13px 16px !important;
+    background: var(--dl-surface) !important;
+    font-family: var(--dl-font) !important;
+
+    .font-weight-bold { font-size: .8125rem !important; font-weight: 600 !important; }
+  }
+
+  .pgn__collapsible-body {
+    padding: 4px 16px 12px !important;
+    background: var(--dl-surface) !important;
+  }
+
+  // Sequence item dividers — lighter than Bootstrap default
+  .border-top.border-light { border-color: var(--dl-border) !important; }
+}
+
+// ── Expand / Collapse all button ──────────────────────────────────────────────
+#expand-button-row .btn.btn-outline-primary {
+  font-family: var(--dl-font) !important;
+  font-size: .8125rem !important;
+  font-weight: 500 !important;
+  border-radius: 20px !important;
+  padding: 6px 22px !important;
+  border-color: var(--dl-border) !important;
+  color: var(--dl-text) !important;
+  background: var(--dl-surface) !important;
+  box-shadow: none !important;
+
+  &:hover, &:focus {
+    background: var(--dl-item-hover) !important;
+    border-color: var(--dl-primary) !important;
+    color: var(--dl-primary) !important;
+    box-shadow: none !important;
+  }
+}
+
+// ── Right sidebar sections (Course Tools, Dates, Handouts) as cards ───────────
+.col-12.col-md-4 section.mb-4 {
+  background: var(--dl-surface) !important;
+  border: 1px solid var(--dl-border) !important;
+  border-radius: 10px !important;
+  padding: 14px 16px !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, .05) !important;
+  margin-bottom: 12px !important;
+
+  h2.h4 {
+    font-family: var(--dl-font) !important;
+    font-size: .68rem !important;
+    font-weight: 700 !important;
+    color: var(--dl-subtle) !important;
+    text-transform: uppercase !important;
+    letter-spacing: .08em !important;
+    margin-bottom: 10px !important;
+    padding-bottom: 8px !important;
+    border-bottom: 1px solid var(--dl-border) !important;
+  }
+
+  // Course Tools links
+  li.small {
+    a, button {
+      display: flex !important;
+      align-items: center !important;
+      padding: 6px 8px !important;
+      border-radius: 6px !important;
+      font-family: var(--dl-font) !important;
+      font-size: .8125rem !important;
+      color: var(--dl-text) !important;
+      text-decoration: none !important;
+
+      &:hover { background: var(--dl-item-hover) !important; color: var(--dl-text) !important; }
+
+      svg, .fa { color: var(--dl-muted) !important; margin-right: 8px !important; }
+    }
+  }
+
+  // Date entries
+  .small { font-family: var(--dl-font) !important; font-size: .8125rem !important; }
+
+  // "View all course dates" link
+  a.font-weight-bold {
+    font-family: var(--dl-font) !important;
+    font-size: .8125rem !important;
+    color: var(--dl-primary) !important;
+  }
+}
