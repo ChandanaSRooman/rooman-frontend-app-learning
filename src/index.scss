@@ -304,6 +304,13 @@
   }
 }
 
+// Rooman labs render edge-to-edge: lift the readable-width cap so the lab
+// solver iframe fills the full page. Notes / quiz / text keep the centered
+// 1024px cap above. The class is toggled in Sequence.jsx on rooman.lab.mounted.
+.unit-container--lab {
+  max-width: none;
+}
+
 .unit-iframe-wrapper {
   margin-top: 0;
 
