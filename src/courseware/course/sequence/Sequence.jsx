@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
-import { useEffect } from 'react';
+import { useEffect, useLayoutEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 
 import {
@@ -46,6 +46,34 @@ const Sequence = ({
   const section = useModel('sections', sequence ? sequence.sectionId : null);
   const sequenceStatus = useSelector(state => state.courseware.sequenceStatus);
   const sequenceMightBeUnit = useSelector(state => state.courseware.sequenceMightBeUnit);
+
+  // Rooman labs render full-width: the solver posts `rooman.lab.mounted` (to
+  // window.top) when it loads inside the unit iframe, so we widen the unit
+  // container edge-to-edge for labs only. Notes / quiz / text keep the
+  // centered readable max-width. Reset on unit change (the next unit may not
+  // be a lab) and on `rooman.lab.unloaded`.
+  const [labFullBleed, setLabFullBleed] = useState(false);
+  useEffect(() => {
+    const onMessage = (e) => {
+      // Security: only trust messages from the lab platform / Open edX hosts.
+      // Prod runs under *.rooman.com; the dev box under *.sslip.io. Anything
+      // else (a third-party embed) can't force the unit container full-width.
+      const ok = typeof e.origin === 'string'
+        && (e.origin.endsWith('.rooman.com') || e.origin.endsWith('.sslip.io'));
+      if (!ok) { return; }
+      const type = e?.data?.type;
+      if (type === 'rooman.lab.mounted') {
+        setLabFullBleed(true);
+      } else if (type === 'rooman.lab.unloaded') {
+        setLabFullBleed(false);
+      }
+    };
+    window.addEventListener('message', onMessage);
+    return () => window.removeEventListener('message', onMessage);
+  }, []);
+  // useLayoutEffect so the reset lands before paint — avoids a one-frame flash
+  // of lab-width when navigating from a lab unit to a non-lab unit.
+  useLayoutEffect(() => { setLabFullBleed(false); }, [unitId]);
 
   const handleNext = () => {
     const nextIndex = sequence.unitIds.indexOf(unitId) + 1;
@@ -201,7 +229,7 @@ const Sequence = ({
             />
           </div>
 
-          <div className="unit-container flex-grow-1 pt-4">
+          <div className={`unit-container flex-grow-1 pt-4${labFullBleed ? ' unit-container--lab' : ''}`}>
             <SequenceContent
               courseId={courseId}
               gated={gated}
