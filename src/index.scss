@@ -616,20 +616,18 @@ body:has(.outline-sidebar-heading-wrapper.collapsed) header.learning-header {
 // restoring the nav so course navigation is always visible.
 #courseTabsNavigation:not(.rooman-tabs-fallback) { display: none !important; }
 
-// ── Sidebar trigger (closed state — fixed at top-left) ────────────────────────
+// ── Sidebar trigger (closed state — inline strip, same position as open header) ─
 .outline-sidebar-heading-wrapper.collapsed {
-  position: fixed !important;
-  top: 0 !important;
-  left: 0 !important;
-  width: 50px !important;
-  height: 50px !important;
-  z-index: 500 !important;
+  flex-shrink: 0 !important;
+  align-self: stretch !important;   /* stretches to full sequence-container height */
+  width: 48px !important;
+  min-width: 48px !important;
   display: flex !important;
-  align-items: center !important;
+  align-items: flex-start !important;
   justify-content: center !important;
-  padding: 0 !important;
+  padding: 10px 0 0 !important;
   margin: 0 !important;
-  background: var(--dl-surface) !important;
+  background: var(--dl-sidebar-bg) !important;
   border-right: 1px solid var(--dl-border) !important;
 
   .outline-sidebar-toggle-btn {
@@ -672,26 +670,21 @@ body:has(.outline-sidebar-heading-wrapper.collapsed) header.learning-header {
   align-items: stretch !important;
   margin: 0 !important;
   background: var(--dl-sidebar-bg) !important;
-  position: relative !important;
 }
 
-// ── Sidebar — overlay panel (floats above content, does not push it) ──────────
-// position:absolute + z-index makes it layer over the content card when open.
-// .sequence-container has position:relative so the absolute is scoped correctly.
+// ── Sidebar — inline panel (pushes content, does not overlay it) ─────────────
+// No absolute positioning — the sidebar is a normal flex child of .sequence-container.
+// Toggle button stays at the same visual position whether open or closed.
 .outline-sidebar-wrapper {
-  position: absolute !important;
-  top: 0 !important;
-  left: 0 !important;
-  height: 100% !important;
-  z-index: 200 !important;
+  flex-shrink: 0 !important;
+  align-self: stretch !important;
   width: 300px !important;
   max-width: 300px !important;
   min-width: 300px !important;
+  height: 100% !important;
   margin-right: 0 !important;
-  display: block !important;
   background: var(--dl-sidebar-bg) !important;
   border-right: 1px solid var(--dl-border) !important;
-  box-shadow: 4px 0 20px rgba(0, 0, 0, .12) !important;
   overflow-y: auto !important;
   overflow-x: hidden !important;
 
@@ -699,23 +692,17 @@ body:has(.outline-sidebar-heading-wrapper.collapsed) header.learning-header {
   .pgn__collapsible { margin-bottom: 0 !important; }
 }
 
-// Backdrop rendered by CourseOutlineTray when sidebar is open in overlay mode.
-// z-index 199 puts it between content (0) and the sidebar panel (200).
-.outline-sidebar-backdrop {
-  position: absolute !important;
-  inset: 0 !important;
-  z-index: 199 !important;
-  background: rgba(0, 0, 0, .25) !important;
-  cursor: pointer !important;
-}
-
 .outline-sidebar-heading-wrapper:not(.collapsed) {
   background: var(--dl-sidebar-bg) !important;
-  border-bottom: none !important;
-  padding: 12px 12px 4px !important;
+  border-bottom: 1px solid var(--dl-border) !important;
+  padding: 6px 10px 6px 4px !important; /* left-tight so toggle btn aligns with closed strip */
   position: sticky !important;
   top: 0 !important;
   z-index: 5 !important;
+  justify-content: flex-start !important;
+  gap: 4px !important;
+  // Toggle button comes first visually regardless of DOM order
+  .outline-sidebar-toggle-btn { order: -1 !important; }
 }
 
 .outline-sidebar-heading,
@@ -830,14 +817,15 @@ body:has(.outline-sidebar-heading-wrapper.collapsed) header.learning-header {
 
 #unit-iframe { height: 100% !important; width: 100% !important; }
 
-// ── Bottom Previous / Next nav bar ────────────────────────────────────────────
-// UnitTitleSlot renders after ContentIFrame in Unit/index.jsx; nav bar sits at bottom naturally.
+// ── Bottom unit nav bar — slim, unobtrusive; clearly distinct from inner slide nav ─
+// Inner slide nav (inside the iframe) handles per-slide navigation.
+// This bar handles unit-to-unit navigation and should read as secondary.
 .rooman-unit-title-row {
   flex-shrink: 0 !important;
   display: flex !important;
   align-items: center !important;
-  height: 52px !important;
-  padding: 0 12px !important;
+  height: 44px !important;
+  padding: 0 16px !important;
   overflow: hidden !important;
   background: var(--dl-surface) !important;
   border-top: 1px solid var(--dl-border) !important;
@@ -854,35 +842,43 @@ body:has(.outline-sidebar-heading-wrapper.collapsed) header.learning-header {
   gap: 8px !important;
 
   .previous-button {
-    font-size: .78rem !important;
+    font-size: .75rem !important;
     font-weight: 500 !important;
-    padding: 7px 18px !important;
-    border-radius: 20px !important;
+    padding: 5px 12px !important;
+    border-radius: 4px !important;
     border: 1px solid var(--dl-border) !important;
-    background: var(--dl-surface) !important;
-    color: var(--dl-text) !important;
+    background: transparent !important;
+    color: var(--dl-muted) !important;
     display: inline-flex !important;
     align-items: center !important;
-    gap: 5px !important;
+    gap: 4px !important;
     cursor: pointer !important;
+    letter-spacing: .01em !important;
+    &:hover:not(:disabled) {
+      border-color: var(--dl-text) !important;
+      color: var(--dl-text) !important;
+      background: var(--dl-item-hover) !important;
+    }
   }
 
   .next-button {
-    font-size: .78rem !important;
-    font-weight: 500 !important;
-    padding: 7px 18px !important;
-    border-radius: 20px !important;
-    background: var(--dl-primary) !important;
+    font-size: .75rem !important;
+    font-weight: 600 !important;
+    padding: 5px 14px !important;
+    border-radius: 4px !important;
+    background: #1f2a78 !important;
     color: #fff !important;
-    border: 1px solid var(--dl-primary) !important;
+    border: 1px solid #1f2a78 !important;
     display: inline-flex !important;
     align-items: center !important;
-    gap: 5px !important;
+    gap: 4px !important;
     cursor: pointer !important;
+    letter-spacing: .01em !important;
+    &:hover:not(:disabled) { background: #161e58 !important; border-color: #161e58 !important; }
   }
 
   .previous-button:disabled,
-  .next-button:disabled { opacity: .4 !important; cursor: not-allowed !important; }
+  .next-button:disabled { opacity: .35 !important; cursor: not-allowed !important; }
 }
 
 // ── Hidden elements ───────────────────────────────────────────────────────────
