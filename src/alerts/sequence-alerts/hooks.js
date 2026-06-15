@@ -7,10 +7,12 @@ import messages from './messages';
 
 function useSequenceBannerTextAlert(sequenceId) {
   const sequence = useModel('sequences', sequenceId);
-  const sequenceStatus = useSelector(state => state.courseware.sequenceStatus);
 
-  // Show Alert that comes along with the sequence
-  useAlert(sequenceStatus === 'loaded' && sequence.bannerText, {
+  // Rooman: suppress the backend-supplied sequence banner (e.g. the
+  // "This section is a prerequisite…" notice). It clutters the focused
+  // learning layout, so the alert is never registered. Pass `false` as the
+  // visible flag while keeping the hook call so hook ordering stays stable.
+  useAlert(false, {
     code: null,
     dismissible: false,
     text: sequence.bannerText,

@@ -553,12 +553,9 @@ header.learning-header {
   }
 }
 
-// Shift header content right when the sidebar-collapse trigger is pinned top-left.
-// Uses :has() so no JS is needed — supported in all modern browsers.
-body:has(.outline-sidebar-heading-wrapper.collapsed) header.learning-header {
-  .container-xl,
-  .container-xl.py-2 { padding-left: 58px !important; }
-}
+// Header content stays anchored at the same left padding whether the outline
+// sidebar is open or collapsed. The collapsed trigger lives inside
+// .sequence-container (below the header), so the header never needs to shift.
 
 // ── Course tabs injected into header via React Portal ─────────────────────────
 #rooman-header-tabs {
@@ -770,6 +767,9 @@ body:has(.outline-sidebar-heading-wrapper.collapsed) header.learning-header {
 }
 
 // ── Content card ──────────────────────────────────────────────────────────────
+// Content panel — flush full-bleed so the iframe uses the entire available
+// width with no framing gutters around it. A single left border separates it
+// from the sidebar; the header supplies the top edge.
 .sequence.w-100 {
   flex: 1 !important;
   min-width: 0 !important;
@@ -778,10 +778,10 @@ body:has(.outline-sidebar-heading-wrapper.collapsed) header.learning-header {
   display: flex !important;
   flex-direction: column !important;
   background: var(--dl-surface) !important;
-  border-radius: 12px !important;
-  border: 1px solid var(--dl-border) !important;
-  margin: 8px !important;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, .06) !important;
+  border: none !important;
+  border-radius: 0 !important;
+  margin: 0 !important;
+  box-shadow: none !important;
 }
 
 .sequence-navigation-container { display: none !important; }
@@ -824,8 +824,8 @@ body:has(.outline-sidebar-heading-wrapper.collapsed) header.learning-header {
   flex-shrink: 0 !important;
   display: flex !important;
   align-items: center !important;
-  height: 44px !important;
-  padding: 0 16px !important;
+  min-height: 56px !important;
+  padding: 10px 20px !important;
   overflow: hidden !important;
   background: var(--dl-surface) !important;
   border-top: 1px solid var(--dl-border) !important;
@@ -842,16 +842,16 @@ body:has(.outline-sidebar-heading-wrapper.collapsed) header.learning-header {
   gap: 8px !important;
 
   .previous-button {
-    font-size: .75rem !important;
+    font-size: .8rem !important;
     font-weight: 500 !important;
-    padding: 5px 12px !important;
-    border-radius: 4px !important;
+    padding: 8px 16px !important;
+    border-radius: 6px !important;
     border: 1px solid var(--dl-border) !important;
     background: transparent !important;
     color: var(--dl-muted) !important;
     display: inline-flex !important;
     align-items: center !important;
-    gap: 4px !important;
+    gap: 6px !important;
     cursor: pointer !important;
     letter-spacing: .01em !important;
     &:hover:not(:disabled) {
@@ -862,16 +862,16 @@ body:has(.outline-sidebar-heading-wrapper.collapsed) header.learning-header {
   }
 
   .next-button {
-    font-size: .75rem !important;
+    font-size: .8rem !important;
     font-weight: 600 !important;
-    padding: 5px 14px !important;
-    border-radius: 4px !important;
+    padding: 8px 18px !important;
+    border-radius: 6px !important;
     background: #1f2a78 !important;
     color: #fff !important;
     border: 1px solid #1f2a78 !important;
     display: inline-flex !important;
     align-items: center !important;
-    gap: 4px !important;
+    gap: 6px !important;
     cursor: pointer !important;
     letter-spacing: .01em !important;
     &:hover:not(:disabled) { background: #161e58 !important; border-color: #161e58 !important; }
@@ -887,6 +887,17 @@ body:has(.outline-sidebar-heading-wrapper.collapsed) header.learning-header {
 .course-license { display: none !important; }
 footer.footer { display: none !important; }
 
+// Right notifications/discussions sidebar — not part of the focused learning
+// layout. It opens automatically when the course-outline sidebar is collapsed
+// (they are mutually exclusive), reserving ~300px and leaving a gap to the
+// right of full-bleed units like labs. Suppressing it lets the content card
+// fill the full width in every state.
+[data-testid="sidebar-DISCUSSIONS_NOTIFICATIONS"],
+[data-testid="sidebar-DISCUSSIONS"],
+[data-testid="sidebar-NOTIFICATIONS"],
+.sidebar-trigger-container,
+.notification-tray-trigger { display: none !important; }
+
 // ── Course Home / Outline Tab ─────────────────────────────────────────────────
 
 // Course title is already in the header — hide the redundant h2 row.
@@ -898,36 +909,60 @@ div[data-learner-type].row.w-100.mx-0 { display: none !important; }
 .row.course-outline-tab { padding: 16px 8px 24px !important; }
 
 // ── Resume / Start course card ────────────────────────────────────────────────
+// Compact, premium hero: deep brand gradient, clear title, solid white CTA.
 [data-testid="start-resume-card"] {
   border: none !important;
-  border-radius: 12px !important;
-  background: linear-gradient(135deg, #0056d2 0%, #1d4ed8 100%) !important;
-  box-shadow: 0 3px 12px rgba(0, 86, 210, .22) !important;
+  border-radius: 14px !important;
+  background: linear-gradient(115deg, #06173a 0%, #0a2f7a 45%, #0056d2 100%) !important;
+  box-shadow: 0 6px 20px rgba(6, 23, 58, .28) !important;
   overflow: hidden !important;
+  position: relative !important;
+
+  // Soft radial highlight for depth (purely decorative).
+  &::after {
+    content: '' !important;
+    position: absolute !important;
+    top: -40% !important;
+    right: -10% !important;
+    width: 320px !important;
+    height: 320px !important;
+    background: radial-gradient(circle, rgba(255, 255, 255, .12) 0%, transparent 70%) !important;
+    pointer-events: none !important;
+  }
 
   .pgn__card-header {
     background: transparent !important;
-    padding: 18px 20px 14px !important;
+    padding: 22px 26px !important;
     border: none !important;
+    position: relative !important;
+    z-index: 1 !important;
+    align-items: center !important;
 
     .pgn__card-header-title {
-      color: rgba(255, 255, 255, .9) !important;
+      color: #fff !important;
       font-family: var(--dl-font) !important;
-      font-size: .875rem !important;
-      font-weight: 500 !important;
+      font-size: 1.15rem !important;
+      font-weight: 700 !important;
+      letter-spacing: -.01em !important;
     }
 
     .pgn__card-header-actions .btn-brand {
-      background: rgba(255, 255, 255, .18) !important;
-      border: 1px solid rgba(255, 255, 255, .5) !important;
-      color: #fff !important;
-      border-radius: 22px !important;
-      font-size: .8125rem !important;
-      font-weight: 600 !important;
-      padding: 7px 24px !important;
+      background: #fff !important;
+      border: none !important;
+      color: #06173a !important;
+      border-radius: 8px !important;
+      font-size: .85rem !important;
+      font-weight: 700 !important;
+      padding: 9px 26px !important;
       font-family: var(--dl-font) !important;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, .15) !important;
+      transition: transform .12s ease, box-shadow .12s ease !important;
 
-      &:hover { background: rgba(255, 255, 255, .28) !important; }
+      &:hover {
+        background: #fff !important;
+        transform: translateY(-1px) !important;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, .22) !important;
+      }
     }
   }
 
@@ -937,26 +972,71 @@ div[data-learner-type].row.w-100.mx-0 { display: none !important; }
 // ── Section accordion cards ───────────────────────────────────────────────────
 .pgn__collapsible--card-lg {
   border: 1px solid var(--dl-border) !important;
-  border-radius: 10px !important;
+  border-radius: 12px !important;
   box-shadow: 0 1px 3px rgba(0, 0, 0, .05) !important;
   overflow: hidden !important;
-  margin-bottom: 8px !important;
+  margin-bottom: 10px !important;
 
   .pgn__collapsible-trigger {
-    padding: 13px 16px !important;
+    padding: 16px 18px !important;
     background: var(--dl-surface) !important;
     font-family: var(--dl-font) !important;
 
-    .font-weight-bold { font-size: .8125rem !important; font-weight: 600 !important; }
+    .font-weight-bold { font-size: .9rem !important; font-weight: 600 !important; color: var(--dl-text) !important; }
+
+    &:hover { background: var(--dl-item-hover) !important; }
   }
 
   .pgn__collapsible-body {
-    padding: 4px 16px 12px !important;
+    padding: 2px 18px 10px !important;
     background: var(--dl-surface) !important;
   }
 
-  // Sequence item dividers — lighter than Bootstrap default
-  .border-top.border-light { border-color: var(--dl-border) !important; }
+  // Sequence item dividers — removed; rows get their own hover surface instead
+  .border-top.border-light { border-color: transparent !important; }
+}
+
+// ── Unit / sequence rows inside a section ─────────────────────────────────────
+#courseHome-outline {
+  li > div {
+    margin-top: 0 !important;
+    padding: 0 !important;
+  }
+
+  // The SequenceTitle row — turn each into a tidy, hoverable list item.
+  .row.w-100.m0,
+  .row.w-100.m-0 {
+    align-items: center !important;
+    margin: 2px 0 !important;
+    padding: 9px 10px !important;
+    border-radius: 8px !important;
+    transition: background .12s ease !important;
+
+    &:hover { background: var(--dl-item-hover) !important; }
+  }
+
+  // Completion check icon — align and size consistently
+  .pgn__icon { width: 18px !important; height: 18px !important; }
+
+  // Title link
+  a {
+    font-family: var(--dl-font) !important;
+    font-size: .85rem !important;
+    font-weight: 500 !important;
+    color: var(--dl-text) !important;
+    text-decoration: none !important;
+
+    &:hover { color: var(--dl-primary) !important; text-decoration: none !important; }
+  }
+
+  span.align-middle { font-family: var(--dl-font) !important; font-size: .85rem !important; }
+
+  // Effort estimate ("1 min" / "1 activity") — subtle metadata pill, de-emphasised
+  .effort-estimate, [class*='effort'] {
+    font-size: .7rem !important;
+    color: var(--dl-subtle) !important;
+    font-weight: 500 !important;
+  }
 }
 
 // ── Expand / Collapse all button ──────────────────────────────────────────────
