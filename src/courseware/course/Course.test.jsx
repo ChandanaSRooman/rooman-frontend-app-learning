@@ -272,7 +272,7 @@ describe('Course', () => {
   });
 
   describe('Sequence alerts display', () => {
-    it('renders banner text alert', async () => {
+    it('suppresses the sequence banner text alert (Rooman focused layout)', async () => {
       const courseMetadata = Factory.build('courseMetadata');
       const sequenceBlocks = [Factory.build('block', { type: 'sequential', banner_text: 'Some random banner text to display.' })];
       const sequenceMetadata = [Factory.build(
@@ -288,7 +288,9 @@ describe('Course', () => {
         sequenceId: sequenceBlocks[0].id,
       };
       render(<Course {...testData} />, { store: testStore, wrapWithRouter: true });
-      waitFor(() => expect(screen.findByText('Some random banner text to display.')).toBeInTheDocument());
+      // The backend-supplied banner is intentionally never registered, so it
+      // should not appear anywhere in the rendered course view.
+      expect(screen.queryByText('Some random banner text to display.')).not.toBeInTheDocument();
     });
 
     it('renders Entrance Exam alert with passing score', async () => {
