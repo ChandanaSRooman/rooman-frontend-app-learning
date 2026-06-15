@@ -938,7 +938,9 @@ div[data-learner-type].row.w-100.mx-0 { display: none !important; }
     z-index: 1 !important;
     align-items: center !important;
 
-    .pgn__card-header-title {
+    // Paragon renders the title as .pgn__card-header-title-{size} (e.g. -md),
+    // so match the prefix rather than the bare class.
+    [class*='pgn__card-header-title'] {
       color: #fff !important;
       font-family: var(--dl-font) !important;
       font-size: 1.15rem !important;
